@@ -1,0 +1,27 @@
+/* 
+ * @theme base
+ * @auto-scaling true
+*/
+
+@import 'uncover';
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* ⬇️ Mark the image of "1" in every pages as morphable image named as "one" ⬇️ */
+img[alt="1"] {
+  view-transition-name: one;
+  contain: layout; /* required */
+}
+
+/* Generic image styling for number icons */
+img:is([alt="1"], [alt="2"], [alt="3"]) {
+  height: 64px;
+  position: relative;
+  top: -0.1em;
+  vertical-align: middle;
+  width: 64px;
+}
