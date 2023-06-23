@@ -1,0 +1,20 @@
+{
+  "name": "sql-orm-examples",
+  "version": "1.0.0",
+  "description": "Simple repository to illustrate SQL and ORM concepts",
+  "scripts": {
+    "build": "rimraf public && npm run -s og-image && npm run -s deck",
+    "deck": "marp --no-stdin SQL-ORM-SLIDES.md -o public/index.html && ncp assets public/assets",
+    "og-image": "marp --no-stdin SQL-ORM-SLIDES.md -o public/og-image.jpg",
+    "serve": "npx parcel public/index.html",
+    "start": "npm run -s build && npx parcel public/index.html"
+  },
+  "author": "André Luciani",
+  "license": "MIT",
+  "devDependencies": {
+    "@marp-team/marp-cli": "^3.0.2",
+    "ncp": "^2.0.0",
+    "parcel": "^2.9.2",
+    "rimraf": "^5.0.1"
+  }
+}

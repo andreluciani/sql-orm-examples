@@ -2,6 +2,8 @@
 
 Simple repository to illustrate SQL and ORM concepts
 
+The slides are built with [Marp](https://github.com/marp-team/marp-cli)
+
 ## **Part 1: SQL**
 
 1. Introduction to SQL:
