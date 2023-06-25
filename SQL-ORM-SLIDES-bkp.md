@@ -162,3 +162,64 @@ f(x) = \int_{-\infty}^\infty
     \hat f(\xi)\,e^{2 \pi i \xi x}
     \,d\xi
 $$
+
+---
+
+# PSQL - PostgreSQL CLI
+
+```bash
+psql
+CREATE DATABASE blog;
+CREATE DATABASE supermarket;
+CREATE DATABASE gym;
+\l
+```
+
+```bash
+                                 List of databases
+    Name     | Owner  | Encoding |   Collate   |    Ctype    | Access privileges
+-------------+--------+----------+-------------+-------------+-------------------
+ blog        | gitpod | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ gym         | gitpod | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ supermarket | gitpod | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+
+```
+
+---
+
+<!-- _class: invert -->
+
+### Databases, Tables, Rows and Columns
+
+#### List tables of a database
+
+```bash
+psql
+\c blog
+\dt
+```
+
+```
+          List of relations
+ Schema |    Name    | Type  | Owner
+--------+------------+-------+--------
+ public | posts      | table | gitpod
+ public | user_post  | table | gitpod
+ public | user_types | table | gitpod
+ public | users      | table | gitpod
+
+```
+
+ <!-- Each table has columns, which are attributes of every entry (row) of the table. You can think of tables as spreadsheets. Each column has a type (int, char, datetime, enum, etc), and can have a constraint as well (unique, not null, etc). If the column is a **primary** key, it means that the column identifies the row of the table. If the column is a **foreign** key, that means it is related to ANOTHER table, and it uses the primary key OR another unique column of the other table. -->
+
+---
+
+# SQL Constraints
+
+NOT NULL - Ensures that a column cannot have a NULL value
+UNIQUE - Ensures that all values in a column are different
+PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
+FOREIGN KEY - Prevents actions that would destroy links between tables
+CHECK - Ensures that the values in a column satisfies a specific condition
+DEFAULT - Sets a default value for a column if no value is specified
+CREATE INDEX - Used to create and retrieve data from the database very quickly

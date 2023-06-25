@@ -7,9 +7,9 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 ## **Part 1: SQL**
 
 1. Introduction to SQL:
-   - [ ]  Definition of SQL (Structured Query Language).
-   - [ ]  Basic concepts: databases, tables, rows, and columns.
-   - [ ]  SQL's role in managing relational databases.
+   - [x]  Definition of SQL (Structured Query Language).
+   - [x]  Basic concepts: databases, tables, rows, and columns.
+   - [x]  SQL's role in managing relational databases.
 
 2. Data Manipulation Language (DML):
    - [ ]  SELECT statement: retrieving data from tables.
@@ -22,13 +22,27 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [ ]  ALTER TABLE: modifying table structure.
    - [ ]  DROP TABLE: deleting a table.
 
-4. Querying with SQL:
+4. SQL Relationships:
+   - [ ]  ONE-TO-ONE
+   - [ ]  ONE-TO-MANY
+   - [ ]  MANY-TO-MANY
+
+5. SQL Constraints:
+   - [ ]  NOT NULL - Ensures that a column cannot have a NULL value
+   - [ ]  UNIQUE - Ensures that all values in a column are different
+   - [ ]  PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
+   - [ ]  FOREIGN KEY - Prevents actions that would destroy links between tables
+   - [ ]  CHECK - Ensures that the values in a column satisfies a specific condition
+   - [ ]  DEFAULT - Sets a default value for a column if no value is specified
+   - [ ]  CREATE INDEX - Used to create and retrieve data from the database very quickly
+
+6. Querying with SQL:
    - [ ]  Filtering data with WHERE clause.
    - [ ]  Sorting data with ORDER BY clause.
    - [ ]  Combining data with JOIN clauses.
    - [ ]  Aggregating data with GROUP BY clause.
 
-5. Advanced SQL Concepts:
+7. Advanced SQL Concepts:
    - [ ]  Subqueries: using queries within queries.
    - [ ]  Views: virtual tables for simplified querying.
    - [ ]  Indexes: optimizing data retrieval.

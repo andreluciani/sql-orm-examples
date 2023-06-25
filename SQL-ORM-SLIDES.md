@@ -137,3 +137,35 @@ In relational databases, the data is stored in **tables**
   * `created_at` - datetime
 
  <!-- Each table has columns, which are attributes of every entry (row) of the table. You can think of tables as spreadsheets. Each column has a type (int, char, datetime, enum, etc), and can have a constraint as well (unique, not null, etc). If the column is a **primary** key, it means that the column identifies the row of the table. If the column is a **foreign** key, that means it is related to ANOTHER table, and it uses the primary key OR another unique column of the other table. -->
+
+ ---
+
+<!-- _class: invert -->
+
+### Databases, Tables, Rows and Columns
+
+#### Table _Rows_
+
+```bash {4}
+blog=# select id, user_type_id, name, email, created_at from users;
+ id | user_type_id |   name    |           email           |         created_at         
+----+--------------+-----------+---------------------------+----------------------------
+  1 |            1 | André     | andre.luciani@email.com   | 2023-06-25 20:31:46.438607
+  2 |            1 | John      | john.doe@email.com        | 2023-06-25 20:31:46.438607
+  3 |            1 | Priscilla | priscilla.scott@email.com | 2023-06-25 20:31:46.438607
+(3 rows)
+ ```
+
+ <!-- In this slide we can see some ROWS from the "users" table. Each row is one entry and has the attributes defined in the columns. -->
+
+ ---
+
+### SQL's Role in Database Management
+
+* SQL is specifically designed for managing **relational** databases.
+
+* It provides a standardized approach for _creating_, _modifying_, and _querying_ data.
+
+* SQL ensures data _integrity_ and _consistency_ in relational databases.
+
+ <!-- In this slide we can see some ROWS from the "users" table. Each row is one entry and has the attributes defined in the columns. -->
