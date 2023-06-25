@@ -11,6 +11,11 @@
   gap: 1rem;
 }
 
+ul {
+  list-style-type: none;
+  margin-left: 40px;
+}
+
 /* ⬇️ Mark the image of "1" in every pages as morphable image named as "one" ⬇️ */
 img[alt="1"] {
   view-transition-name: one;

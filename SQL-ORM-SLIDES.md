@@ -6,159 +6,134 @@ theme: base
 transition: fade
 paginate: false
 _paginate: false
-style: |
-  .columns {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
 math: mathjax
 ---
 
-<!-- class: lead -->
+<!-- _class: lead -->
 
 # <!--fit--> Fundamentals of SQL and ORM
 
 Understanding SQL at its Core: Building a Strong Foundation for Data Management
 
-<!-- Presenter notes can be written HTML comments. -->
+<!-- The aim goal of this presentation is to show the main concepts of SQL and ORMs. -->
 
 ---
 
-<!-- class: lead gaia -->
+<!-- _class: invert -->
 
-# <!--fit--> SQL
+# Agenda
 
----
+- ![1](https://icongr.am/material/numeric-1-circle.svg?color=ffffff) **SQL**
+  - Definition, basic syntax, querying and more
+- ![2](https://icongr.am/material/numeric-2-circle.svg?color=ffffff) **ORMs**
+  - Definition, popular ORMs and examples
+- ![3](https://icongr.am/material/numeric-3-circle.svg?color=ffffff) **Best Practices and Tips**
+  - Performance, security and debugging
 
-<!-- class: lead -->
-
-##### <!--fit--> What is SQL?
-
-##### <!--fit--> SQL stands for Structured Query Language<br />and is the most common language used in databases.
-
----
-
-<!-- transition: cover -->
-
-Changed the kind of transition to `cover`.
+<!-- Here are the topics that will be covered. We'll start by looking at definitions of SQL and ORMs, including examples, followed by best practives and tips. -->
 
 ---
 
-<!-- _transition: none -->
 
-Disabled transition for this slide.
+![1 w:128 h:128](https://icongr.am/material/numeric-1-circle.svg?color=666666)
 
-~~Hi~~ Hello, ~there~ world!
+# SQL
+
+**S**tructured **Q**uery **L**anguage
+
+<!-- So what is SQL? It stands for structured query language. -->
 
 ---
 
-<!-- class: gaia -->
-<!-- _transition: clockwise -->
+<style scoped>
+section li em {
+  font-size: 25px;
+}
+</style>
 
-### This is what clockwise looks like!
+# ![1](https://icongr.am/material/numeric-1-circle.svg?color=666666) SQL
+
+* It is a standard language used for managing __relational databases__
+ * _A relational database is a type of database that stores and provides access to data points that are related to one another. (Oracle)_
+* SQL provides a set of **commands** for interacting with **databases**
+ * _A database is an organized collection of structured information, or data, typically stored electronically in a computer system. (Oracle)_
+
+ <!-- It is the standard used for ralational databases, which the data points are related to one another. It provides commands to create, retrieve, update and delete (CRUD) data from and to the database. -->
+
+---
+
+### SQL Database Management Systems
+
+|                                                       DMS                                                      |         License         |
+|:--------------------------------------------------------------------------------------------------------------:|:-----------------------:|
+|               ![MySQL Logo](https://icongr.am/simple/mysql.svg?size=64&color=currentColor&colored=false) MySQL               | Proprietary/Open-source |
+| ![](https://icongr.am/simple/microsoftsqlserver.svg?size=64&color=currentColor&colored=false) Microsoft SQL Server |       Proprietary       |
+|              ![](https://icongr.am/simple/oracle.svg?size=64&color=currentColor&colored=false) Oracle              |       Proprietary       |
+|          ![](https://icongr.am/simple/postgresql.svg?size=64&color=currentColor&colored=false) PostgreSQL          |       Open-source       |
+|              ![](https://icongr.am/simple/sqlite.svg?size=64&color=currentColor&colored=false) SQLite              |       Open-source       |
+
+ <!-- Here are a few examples of Relational Database Management Systems that use SQL -->
+
+---
+
+<!-- _class: invert -->
+
+### Databases, Tables, Rows and Columns
+
+Imagine we have a PostgreSQL server running:
+
+
+![postgres](https://icongr.am/simple/postgresql.svg?size=128&color=ffffff&colored=false)
+*postgres://localhost:5432*
+
+* #### Databases
+
+* `blog`
+* `supermarket`
+* `gym`
+
+ <!-- In this server, we can have multiple databases with different purposes and context, for instance, a database for a blog, a database for a supermarket and a database for a gym. Each of them can store data that is relevant for instance, users and blog posts for the first one, products and prices for the second and users and workout plans for the latest -->
+
+---
+
+<!-- _class: invert -->
+
+### Databases, Tables, Rows and Columns
 
 <div class="columns">
 <div>
 
-Javascrpt:
+Databases act like _containers_ of related data.
 
-```js
-console.log("Hello, JavaScript!");
-```
-
-Python:
-
-```python
-print("Hello, Python!")
-```
-
-Go:
-
-```go
-fmt.Println("Hello, Go!")
-```
+In relational databases, the data is stored in **tables**
 
 </div>
 <div>
 
-Bash:
+`blog` database:
 
-```bash
-psql
-CREATE my_database;
-q\
-```
+![h:190](./assets/tables.png)
 
-SQL:
-
-```sql
-SELECT * FROM users WHERE id=5;
-```
+4 tables, 3 _relations_
 
 </div>
 </div>
 
----
+ <!-- In this example, the blog database has 4 tables, one for storing user data, one for storing posts data, one for storing user types (basic, admin or superuser, for instance) and one to map users and posts, which is called a junction table. These links are called relations and there are some types of relations possibles, which will be shown later. -->
 
-<!-- class: invert -->
-<!-- Regular list -->
+ ---
 
-- One
-- Two
-- Three
+<!-- _class: invert -->
 
-1. One
-2. Two
-3. Three
+### Databases, Tables, Rows and Columns
 
----
+#### Table _Columns_
 
-<!-- class: none -->
-<!-- Fragmented list -->
+* `users`
+  * `id` - int - **Primary** key
+  * `user_type` - int - **Foreign** key
+  * `name` - varchar
+  * `...`
+  * `created_at` - datetime
 
-- One
-- Two
-- Three
-
-1. One
-2. Two
-3. Three
-
----
-
-# Today's topics
-
-- ![1](https://icongr.am/material/numeric-1-circle.svg?color=666666) Introduction
-- ![2](https://icongr.am/material/numeric-2-circle.svg?color=666666) Features
-- ![3](https://icongr.am/material/numeric-3-circle.svg?color=666666) Conclusion
-
----
-
-<!-- _class: lead -->
-
-![1 w:256 h:256](https://icongr.am/material/numeric-1-circle.svg?color=ff9900)
-
-# Introduction
-
----
-
-# ![1](https://icongr.am/material/numeric-1-circle.svg?color=666666) Introduction
-
-Marp is an open-sourced Markdown presentation ecosystem.
-
-It provides a writing experience of presentation slides by Markdown.
-
----
-
-# Title with $x=2$ equation
-
-Render inline math such as $ax^2+bc+c$.
-
-$$ I\_{xx}=\int\int_Ry^2f(x,y)\cdot{}dydx $$
-
-$$
-f(x) = \int_{-\infty}^\infty
-    \hat f(\xi)\,e^{2 \pi i \xi x}
-    \,d\xi
-$$
+ <!-- Each table has columns, which are attributes of every entry (row) of the table. You can think of tables as spreadsheets. Each column has a type (int, char, datetime, enum, etc), and can have a constraint as well (unique, not null, etc). If the column is a **primary** key, it means that the column identifies the row of the table. If the column is a **foreign** key, that means it is related to ANOTHER table, and it uses the primary key OR another unique column of the other table. -->
