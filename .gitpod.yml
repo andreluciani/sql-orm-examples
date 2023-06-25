@@ -1,4 +1,4 @@
-
+image: gitpod/workspace-postgres
 tasks:
   - name: Install Google Chrome
     init: |
@@ -8,7 +8,10 @@ tasks:
       sudo dpkg -i google-chrome-stable_current_amd64.deb
       sudo apt-get -f install -y
     command: npm start
-
+ports:
+  - port: 5432
+    onOpen: ignore
+    visibility: private
 vscode:
   extensions:
     - marp-team.marp-vscode
