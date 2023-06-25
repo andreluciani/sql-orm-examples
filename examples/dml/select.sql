@@ -1,0 +1,1 @@
+SELECT id, name, last_name, email FROM users;

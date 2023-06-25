@@ -34,7 +34,6 @@ Understanding SQL at its Core: Building a Strong Foundation for Data Management
 
 ---
 
-
 ![1 w:128 h:128](https://icongr.am/material/numeric-1-circle.svg?color=666666)
 
 # SQL
@@ -53,10 +52,10 @@ section li em {
 
 # ![1](https://icongr.am/material/numeric-1-circle.svg?color=666666) SQL
 
-* It is a standard language used for managing __relational databases__
- * _A relational database is a type of database that stores and provides access to data points that are related to one another. (Oracle)_
-* SQL provides a set of **commands** for interacting with **databases**
- * _A database is an organized collection of structured information, or data, typically stored electronically in a computer system. (Oracle)_
+- It is a standard language used for managing **relational databases**
+- _A relational database is a type of database that stores and provides access to data points that are related to one another. (Oracle)_
+- SQL provides a set of **commands** for interacting with **databases**
+- _A database is an organized collection of structured information, or data, typically stored electronically in a computer system. (Oracle)_
 
  <!-- It is the standard used for ralational databases, which the data points are related to one another. It provides commands to create, retrieve, update and delete (CRUD) data from and to the database. -->
 
@@ -64,9 +63,9 @@ section li em {
 
 ### SQL Database Management Systems
 
-|                                                       DMS                                                      |         License         |
-|:--------------------------------------------------------------------------------------------------------------:|:-----------------------:|
-|               ![MySQL Logo](https://icongr.am/simple/mysql.svg?size=64&color=currentColor&colored=false) MySQL               | Proprietary/Open-source |
+|                                                        DMS                                                         |         License         |
+| :----------------------------------------------------------------------------------------------------------------: | :---------------------: |
+|          ![MySQL Logo](https://icongr.am/simple/mysql.svg?size=64&color=currentColor&colored=false) MySQL          | Proprietary/Open-source |
 | ![](https://icongr.am/simple/microsoftsqlserver.svg?size=64&color=currentColor&colored=false) Microsoft SQL Server |       Proprietary       |
 |              ![](https://icongr.am/simple/oracle.svg?size=64&color=currentColor&colored=false) Oracle              |       Proprietary       |
 |          ![](https://icongr.am/simple/postgresql.svg?size=64&color=currentColor&colored=false) PostgreSQL          |       Open-source       |
@@ -78,19 +77,28 @@ section li em {
 
 <!-- _class: invert -->
 
+### SQL Database Example
+
+![h:550](./assets/example-database.png)
+
+ <!-- Take a look at this database architecture. It shows tables and relations between them. In the next slides we'll understand how everything is linked and model ourselves a few examples. -->
+
+---
+
+<!-- _class: invert -->
+
 ### Databases, Tables, Rows and Columns
 
 Imagine we have a PostgreSQL server running:
 
-
 ![postgres](https://icongr.am/simple/postgresql.svg?size=128&color=ffffff&colored=false)
-*postgres://localhost:5432*
+_postgres://localhost:5432_
 
-* #### Databases
+- #### Databases
 
-* `blog`
-* `supermarket`
-* `gym`
+- `blog`
+- `supermarket`
+- `gym`
 
  <!-- In this server, we can have multiple databases with different purposes and context, for instance, a database for a blog, a database for a supermarket and a database for a gym. Each of them can store data that is relevant for instance, users and blog posts for the first one, products and prices for the second and users and workout plans for the latest -->
 
@@ -121,7 +129,7 @@ In relational databases, the data is stored in **tables**
 
  <!-- In this example, the blog database has 4 tables, one for storing user data, one for storing posts data, one for storing user types (basic, admin or superuser, for instance) and one to map users and posts, which is called a junction table. These links are called relations and there are some types of relations possibles, which will be shown later. -->
 
- ---
+---
 
 <!-- _class: invert -->
 
@@ -129,16 +137,16 @@ In relational databases, the data is stored in **tables**
 
 #### Table _Columns_
 
-* `users`
-  * `id` - int - **Primary** key
-  * `user_type` - int - **Foreign** key
-  * `name` - varchar
-  * `...`
-  * `created_at` - datetime
+- `users`
+  - `id` - int - **Primary** key
+  - `user_type` - int - **Foreign** key
+  - `name` - varchar
+  - `...`
+  - `created_at` - datetime
 
  <!-- Each table has columns, which are attributes of every entry (row) of the table. You can think of tables as spreadsheets. Each column has a type (int, char, datetime, enum, etc), and can have a constraint as well (unique, not null, etc). If the column is a **primary** key, it means that the column identifies the row of the table. If the column is a **foreign** key, that means it is related to ANOTHER table, and it uses the primary key OR another unique column of the other table. -->
 
- ---
+---
 
 <!-- _class: invert -->
 
@@ -148,24 +156,308 @@ In relational databases, the data is stored in **tables**
 
 ```bash {4}
 blog=# select id, user_type_id, name, email, created_at from users;
- id | user_type_id |   name    |           email           |         created_at         
+ id | user_type_id |   name    |           email           |         created_at
 ----+--------------+-----------+---------------------------+----------------------------
   1 |            1 | André     | andre.luciani@email.com   | 2023-06-25 20:31:46.438607
   2 |            1 | John      | john.doe@email.com        | 2023-06-25 20:31:46.438607
   3 |            1 | Priscilla | priscilla.scott@email.com | 2023-06-25 20:31:46.438607
 (3 rows)
- ```
+```
 
  <!-- In this slide we can see some ROWS from the "users" table. Each row is one entry and has the attributes defined in the columns. -->
 
- ---
+---
 
 ### SQL's Role in Database Management
 
-* SQL is specifically designed for managing **relational** databases.
+- SQL is specifically designed for managing **relational** databases.
 
-* It provides a standardized approach for _creating_, _modifying_, and _querying_ data.
+- It provides a standardized approach for _creating_, _modifying_, and _querying_ data.
 
-* SQL ensures data _integrity_ and _consistency_ in relational databases.
+- SQL ensures data _integrity_ and _consistency_ in relational databases.
 
- <!-- In this slide we can see some ROWS from the "users" table. Each row is one entry and has the attributes defined in the columns. -->
+ <!-- In summary, SQL is used to manage relational databases while ensuring data integrity and consistency. -->
+
+---
+
+  <!-- _class: invert -->
+
+### Data Manipulation Language (DML)
+
+- Subset of a programming language used explicitly to make changes in the database
+  _(e.g. CRUD operations)_.
+
+- In case of SQL:
+
+  - `SELECT` - Retrieve
+
+  - `INSERT` - Create
+
+  - `UPDATE` - Modify existing data
+
+  - `DELETE` - Exclude entries
+
+ <!-- Data manipulation language is a subset of a programming language used to make changes in the database. Let's see some of them in the following slides. -->
+
+---
+
+  <!-- _class: invert -->
+
+### The `SELECT` statement
+
+- Used to retrieve data. Basic syntax:
+
+```sql
+SELECT
+  column1, column2, column3
+FROM
+  table_name;
+```
+
+- The wildcard `*` can be used to select "all columns"
+- When making SQL statementes, always remember to close the statement with `;`
+- The SQL words (`SELECT`, `FROM`, ...) usually are written with uppercase for better readability.
+
+ <!-- The select statement is one of the most important. It is used to retrieve data and the basic syntax is as follows. -->
+
+---
+
+  <!-- _class: invert -->
+
+### The `SELECT` statement
+
+###### Example using [`psql`](https://www.postgresql.org/docs/current/app-psql.html):
+
+```bash
+psql      # starts postgres interactive terminal
+\c blog   # connects to 'blog' database
+```
+
+###### After connecting to the database, execute the query:
+
+```
+blog=# SELECT id, name, last_name, email FROM users;
+ id |   name    | last_name |           email
+----+-----------+-----------+---------------------------
+  1 | André     | Luciani   | andre.luciani@email.com
+  2 | John      | Doe       | john.doe@email.com
+  3 | Priscilla | Scott     | priscilla.scott@email.com
+(3 rows)
+```
+
+ <!-- Here's one example using psql. -->
+
+---
+
+  <!-- _class: invert -->
+
+### The `INSERT` statement
+
+- Used to add data. Basic syntax:
+
+```sql
+INSERT INTO table_name(column1, column2, …)
+VALUES (value1, value2, …);
+```
+
+- Multiple rows can be added by providing more values grouped with `()`
+
+---
+
+  <!-- _class: invert -->
+
+### The `INSERT` statement
+
+###### Adding a new row on the `posts` table:
+
+```sql
+INSERT INTO posts(title, content, create_at, updated_at)
+VALUES ('Another post', 'Another example', NOW(), NOW());
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `INSERT` statement
+
+```diff
+id |             title              |         content          |         create_at          |         updated_at
+----+--------------------------------+--------------------------+----------------------------+----------------------------
+  1 | PostgreSQL 101                 | This is an example post. | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  2 | Bread Recipe                   | This is an example post. | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  3 | Will AI take over the world?   | This is an example post. | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  4 | How to learn a new technology. | This is an example post. | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
++ 5 | Another post                   | Another example          | 2023-06-25 22:23:57.567231 | 2023-06-25 22:23:57.567231
+(5 rows)
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `UPDATE` statement
+
+- Used to update entries.
+  Basic syntax:
+
+```sql
+UPDATE table_name
+SET column1 = value1,
+    column2 = value2,
+    ...
+WHERE condition;
+```
+
+<!-- When updating a table, besides telling which table and columns we want to update, we must provide a condition to filter out only the rows that we want to update too. This can be specific enough to update only one single row, or more general, if we want to update multiple entries. -->
+
+---
+
+  <!-- _class: invert -->
+
+### The `UPDATE` statement
+
+###### Updating a row on the `posts` table:
+
+```sql
+UPDATE posts
+SET content = 'The post content was updated!',
+    updated_at = NOW(),
+WHERE id = 2;
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `UPDATE` statement
+
+```diff
+ id |             title              |            content            |         create_at          |         updated_at
+----+--------------------------------+-------------------------------+----------------------------+----------------------------
+  1 | PostgreSQL 101                 | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+- 2 | Bread Recipe                   | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  3 | Will AI take over the world?   | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  4 | How to learn a new technology. | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  5 | Another post                   | Another example               | 2023-06-25 22:23:57.567231 | 2023-06-25 22:23:57.567231
++ 2 | Bread Recipe                   | The post content was updated! | 2023-06-25 20:30:40.617806 | 2023-06-25 22:36:44.371102
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `DELETE` statement
+
+Basic syntax:
+
+```sql
+DELETE FROM table_name
+WHERE condition;
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `DELETE` statement
+
+###### Deleting a row from the `posts` table:
+
+```sql
+DELETE FROM posts
+WHERE id = 5;
+```
+
+---
+
+  <!-- _class: invert -->
+
+### The `DELETE` statement
+
+```diff
+ id |             title              |            content            |         create_at          |         updated_at
+----+--------------------------------+-------------------------------+----------------------------+----------------------------
+  1 | PostgreSQL 101                 | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  3 | Will AI take over the world?   | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+  4 | How to learn a new technology. | This is an example post.      | 2023-06-25 20:30:40.617806 | 2023-06-25 20:30:40.617806
+- 5 | Another post                   | Another example               | 2023-06-25 22:23:57.567231 | 2023-06-25 22:23:57.567231
+  2 | Bread Recipe                   | The post content was updated! | 2023-06-25 20:30:40.617806 | 2023-06-25 22:36:44.371102
+```
+
+---
+
+<!-- _class: invert -->
+
+# Agenda
+
+- ![1](https://icongr.am/material/numeric-1-circle.svg?color=ffffff) **~~SQL~~**
+
+- ![2](https://icongr.am/material/numeric-2-circle.svg?color=ffffff) **ORMs**
+  - Definition, popular ORMs and examples
+- ![3](https://icongr.am/material/numeric-3-circle.svg?color=ffffff) **Best Practices and Tips**
+  - Performance, security and debugging
+
+<!-- With the SQL part complete, let's dive in ORMs -->
+
+---
+
+![2 w:128 h:128](https://icongr.am/material/numeric-2-circle.svg?color=666666)
+
+# ORM
+
+**O**bject **R**elational **M**apping
+
+<!-- So what is ORM? It stands for object relational mapping. -->
+
+---
+
+<style scoped>
+section li em {
+  font-size: 25px;
+}
+</style>
+
+# ![2](https://icongr.am/material/numeric-2-circle.svg?color=666666) ORM
+
+- ...
+
+ <!-- Presenter notes. -->
+
+---
+
+<!-- _class: invert -->
+
+# Agenda
+
+- ![1](https://icongr.am/material/numeric-1-circle.svg?color=ffffff) **~~SQL~~**
+
+- ![2](https://icongr.am/material/numeric-2-circle.svg?color=ffffff) **~~ORMs~~**
+- ![3](https://icongr.am/material/numeric-3-circle.svg?color=ffffff) **Best Practices and Tips**
+  - Performance, security and debugging
+
+<!-- With the SQL part complete, let's dive in ORMs -->
+
+---
+
+![3 w:128 h:128](https://icongr.am/material/numeric-3-circle.svg?color=666666)
+
+# Best Practices and Tips
+
+Things to pay attention!
+
+<!-- So what is ORM? It stands for object relational mapping. -->
+
+---
+
+<style scoped>
+section li em {
+  font-size: 25px;
+}
+</style>
+
+## ![3](https://icongr.am/material/numeric-3-circle.svg?color=666666) Best Practices and Tips
+
+- ...
+
+ <!-- Presenter notes. -->

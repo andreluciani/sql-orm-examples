@@ -16,9 +16,19 @@ ul {
   margin-left: 40px;
 }
 
-/* ⬇️ Mark the image of "1" in every pages as morphable image named as "one" ⬇️ */
+
 img[alt="1"] {
   view-transition-name: one;
+  contain: layout; /* required */
+}
+
+img[alt="2"] {
+  view-transition-name: two;
+  contain: layout; /* required */
+}
+
+img[alt="3"] {
+  view-transition-name: three;
   contain: layout; /* required */
 }
 
