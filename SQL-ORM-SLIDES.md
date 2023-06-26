@@ -202,6 +202,14 @@ blog=# select id, user_type_id, name, email, created_at from users;
 ---
 
   <!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 32px;
+}
+.language-sql {
+  font-size: 150%;
+}
+</style>
 
 ### The `SELECT` statement
 
@@ -215,7 +223,9 @@ FROM
 ```
 
 - The wildcard `*` can be used to select "all columns"
+
 - When making SQL statementes, always remember to close the statement with `;`
+
 - The SQL words (`SELECT`, `FROM`, ...) usually are written with uppercase for better readability.
 
  <!-- The select statement is one of the most important. It is used to retrieve data and the basic syntax is as follows. -->
@@ -251,6 +261,12 @@ blog=# SELECT id, name, last_name, email FROM users;
 
   <!-- _class: invert -->
 
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
+
 ### The `INSERT` statement
 
 - Used to add data. Basic syntax:
@@ -266,14 +282,22 @@ VALUES (value1, value2, …);
 
   <!-- _class: invert -->
 
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
+
 ### The `INSERT` statement
 
-###### Adding a new row on the `posts` table:
+##### Adding a new row on the `posts` table:
 
 ```sql
 INSERT INTO posts(title, content, create_at, updated_at)
 VALUES ('Another post', 'Another example', NOW(), NOW());
 ```
+
+- `NOW()` is a SQL [_function_](<https://www.postgresql.org/docs/devel/functions-datetime.html#:~:text=15%3A23.5%2B01-,now%20(%20),-%E2%86%92%20timestamp%20with>) that returns the current date and time. These functions may differ depending on the DMS used.
 
 ---
 
@@ -296,6 +320,12 @@ id |             title              |         content          |         create_
 
   <!-- _class: invert -->
 
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
+
 ### The `UPDATE` statement
 
 - Used to update entries.
@@ -314,6 +344,11 @@ WHERE condition;
 ---
 
   <!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
 
 ### The `UPDATE` statement
 
@@ -346,6 +381,11 @@ WHERE id = 2;
 ---
 
   <!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
 
 ### The `DELETE` statement
 
@@ -359,6 +399,12 @@ WHERE condition;
 ---
 
   <!-- _class: invert -->
+
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
 
 ### The `DELETE` statement
 

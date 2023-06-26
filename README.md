@@ -12,10 +12,10 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [x]  SQL's role in managing relational databases.
 
 2. Data Manipulation Language (DML):
-   - [ ]  SELECT statement: retrieving data from tables.
-   - [ ]  INSERT statement: inserting data into tables.
-   - [ ]  UPDATE statement: modifying existing data.
-   - [ ]  DELETE statement: removing data from tables.
+   - [x]  SELECT statement: retrieving data from tables.
+   - [x]  INSERT statement: inserting data into tables.
+   - [x]  UPDATE statement: modifying existing data.
+   - [x]  DELETE statement: removing data from tables.
 
 3. Data Definition Language (DDL):
    - [ ]  CREATE TABLE: creating a new table.
