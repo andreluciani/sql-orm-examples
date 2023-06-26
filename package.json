@@ -14,7 +14,7 @@
   "devDependencies": {
     "@marp-team/marp-cli": "^3.0.2",
     "ncp": "^2.0.0",
-    "parcel": "^2.9.2",
+    "parcel": "^2.9.3",
     "rimraf": "^5.0.1"
   }
 }
