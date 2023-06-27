@@ -703,17 +703,19 @@ DROP TABLE
 
 ---
 
-- While modifying one column from one table is straightforward, even that can have a great impact in a large database.
+* While modifying one column from one table is straightforward, even that can have a great impact in a large database.
 
-- When making such modifications, we have to address how to deal with the "old" data. In some cases the solution involves setting a default value or maybe running a script to make the old data consistent with the changes introduced.
+* When making such modifications, we have to address how to deal with the "old" data. In some cases the solution involves setting a default value or maybe running a script to make the old data consistent with the changes introduced.
 
 ---
 
-- The versioning of databases introduces the concept of **migrations**
+<!-- transition: fade -->
 
-- It uses scripts (that can be written in several programming languages) to make the modifications more consistent and easy to roll-back. More on that on the _ORM_ part.
+* The versioning of databases introduces the concept of **migrations**
 
-- In any case, it is always recomended to make database backups before making schema changes.
+* It uses scripts (that can be written in several programming languages) to make the modifications more consistent and easy to roll-back. More on that on the _ORM_ part.
+
+* In any case, it is always recomended to make database backups before making schema changes.
 
 ---
 
