@@ -2,7 +2,7 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 
 CREATE TABLE users (
-    id SERIAL NOT NULL,
+    id serial NOT NULL,
     user_type_id int NOT NULL,
     name varchar NOT NULL,
     last_name varchar NOT NULL,
@@ -14,18 +14,18 @@ CREATE TABLE users (
     PRIMARY KEY (id)
 );
 CREATE TABLE user_types (
-    id SERIAL NOT NULL,
+    id serial NOT NULL,
     type varchar NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 CREATE TABLE user_post (
-    id SERIAL NOT NULL,
+    id serial NOT NULL,
     user_id INT NOT NULL,
     post_id INT NOT NULL,
     PRIMARY KEY (id)
 );
 CREATE TABLE posts (
-    id SERIAL NOT NULL,
+    id serial NOT NULL,
     title varchar NOT NULL,
     content varchar NOT NULL,
     created_at TIMESTAMP NOT NULL,
