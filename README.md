@@ -18,21 +18,21 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [x]  DELETE statement: removing data from tables.
 
 3. Data Definition Language (DDL):
-   - [ ]  CREATE TABLE: creating a new table.
-   - [ ]  ALTER TABLE: modifying table structure.
-   - [ ]  DROP TABLE: deleting a table.
+   - [x]  CREATE TABLE: creating a new table.
+   - [x]  ALTER TABLE: modifying table structure.
+   - [x]  DROP TABLE: deleting a table.
 
 4. SQL Relationships:
-   - [ ]  ONE-TO-ONE
+   - [x]  ONE-TO-ONE
    - [ ]  ONE-TO-MANY
    - [ ]  MANY-TO-MANY
 
 5. SQL Constraints:
-   - [ ]  NOT NULL - Ensures that a column cannot have a NULL value
-   - [ ]  UNIQUE - Ensures that all values in a column are different
-   - [ ]  PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
+   - [x]  NOT NULL - Ensures that a column cannot have a NULL value
+   - [x]  UNIQUE - Ensures that all values in a column are different
+   - [x]  PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
    - [ ]  FOREIGN KEY - Prevents actions that would destroy links between tables
-   - [ ]  CHECK - Ensures that the values in a column satisfies a specific condition
+   - [x]  CHECK - Ensures that the values in a column satisfies a specific condition
    - [ ]  DEFAULT - Sets a default value for a column if no value is specified
    - [ ]  CREATE INDEX - Used to create and retrieve data from the database very quickly
 

@@ -437,7 +437,7 @@ WHERE id = 5;
 
 ### Data Definition Language (DDL)
 
-- Subset of a programming language used to _define_ or _describe_ databases "**structures**".
+- Subset of a programming language used to _define_ or _describe_ databases **schemas** (the "structure" of the DB).
 
 - A few examples from SQL:
 
@@ -674,6 +674,8 @@ HINT:  Use DROP ... CASCADE to drop the dependent objects too.
 ---
 
   <!-- _class: invert -->
+  <!-- transition: cover -->
+
 <style scoped>
 .language-sql {
   font-size: 120%;
@@ -694,6 +696,91 @@ NOTICE:  drop cascades to constraint user_post_fk1 on table user_post
 DROP TABLE
 ```
 - The operation returns which constraints were dropped because of `CASCADE`.
+
+---
+
+# A few considerations
+
+---
+
+- While modifying one column from one table is straightforward, even that can have a great impact in a large database.
+
+- When making such modifications, we have to address how to deal with the "old" data. In some cases the solution involves setting a default value or maybe running a script to make the old data consistent with the changes introduced.
+
+---
+
+- The versioning of databases introduces the concept of **migrations**
+
+- It uses scripts (that can be written in several programming languages) to make the modifications more consistent and easy to roll-back. More on that on the _ORM_ part.
+
+- In any case, it is always recomended to make database backups before making schema changes.
+
+---
+
+<!-- _class: invert -->
+
+# Database Relationships
+
+There are three main SQL database relationships:
+
+1. One-to-one
+2. One-to-many (or Many-to-one)
+3. Many-to-many
+
+**Let's see when to use each of them!**
+
+---
+
+<!-- _class: invert -->
+
+# _One-to-One_
+
+This relation is used when **one** row of `table_one` is linked (or related) to only **one** row of `table_two`
+
+Example: A person and their birthplace, an employee and their salary, a user and their role
+
+---
+
+<!-- _class: invert -->
+
+# _One-to-One_
+
+![h:500](./assets/one-to-one.png)
+
+---
+
+<!-- _class: invert -->
+
+# _One-to-One_
+
+To achieve a one-to-one relationship between tables:
+
+1. Create the two tables that will be linked
+2. On one of the two, add a column with the `FOREIGN KEY` constraint.
+3. The `FOREIGN KEY` column **must be** `UNIQUE`
+
+---
+
+<!-- _class: invert -->
+
+# _One-to-One_
+
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  first_name VARCHAR(50)
+);
+
+CREATE TABLE salaries (
+  user_id int UNIQUE NOT NULL,
+  amount int
+);
+
+ALTER TABLE salaries
+ADD CONSTRAINT users_salaries_fk0
+FOREIGN KEY (user_id)
+REFERENCES users (id);
+```
 
 ---
 
