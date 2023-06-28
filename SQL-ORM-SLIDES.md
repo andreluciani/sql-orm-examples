@@ -565,7 +565,6 @@ CREATE TABLE posts (
 
 ---
 
-  
   <!-- _class: invert -->
 <style scoped>
 li {
@@ -581,18 +580,18 @@ li {
 - Used to modify tables. Usually **add**, **remove**, **rename** columns or its constraints:
 
 ```sql
-ALTER TABLE table_name 
-RENAME COLUMN column_name 
+ALTER TABLE table_name
+RENAME COLUMN column_name
 TO new_column_name;
 ```
 
 ```sql
-ALTER TABLE table_name 
+ALTER TABLE table_name
 ADD COLUMN column_name datatype column_constraint;
 ```
 
 ```sql
-ALTER TABLE table_name 
+ALTER TABLE table_name
 DROP COLUMN column_name;
 ```
 
@@ -687,12 +686,14 @@ DROP TABLE posts;
 ```
 
 ###### But...
+
 ```
 blog=# DROP TABLE posts;
 ERROR:  cannot drop table posts because other objects depend on it
 DETAIL:  constraint user_post_fk1 on table user_post depends on table posts
 HINT:  Use DROP ... CASCADE to drop the dependent objects too.
 ```
+
 - Since it has constraints, the operation cannot be done...
 
 ---
@@ -719,6 +720,7 @@ blog=# DROP TABLE posts CASCADE;
 NOTICE:  drop cascades to constraint user_post_fk1 on table user_post
 DROP TABLE
 ```
+
 - The operation returns which constraints were dropped because of `CASCADE`.
 
 ---
@@ -727,19 +729,19 @@ DROP TABLE
 
 ---
 
-* While modifying one column from one table is straightforward, even that can have a great impact in a large database.
+- While modifying one column from one table is straightforward, even that can have a great impact in a large database.
 
-* When making such modifications, we have to address how to deal with the "old" data. In some cases the solution involves setting a default value or maybe running a script to make the old data consistent with the changes introduced.
+- When making such modifications, we have to address how to deal with the "old" data. In some cases the solution involves setting a default value or maybe running a script to make the old data consistent with the changes introduced.
 
 ---
 
 <!-- transition: fade -->
 
-* The versioning of databases introduces the concept of **migrations**
+- The versioning of databases introduces the concept of **migrations**
 
-* It uses scripts (that can be written in several programming languages) to make the modifications more consistent and easy to roll-back. More on that on the _ORM_ part.
+- It uses scripts (that can be written in several programming languages) to make the modifications more consistent and easy to roll-back. More on that on the _ORM_ part.
 
-* In any case, it is always recomended to make database backups before making schema changes.
+- In any case, it is always recomended to make database backups before making schema changes.
 
 ---
 
@@ -874,11 +876,12 @@ REFERENCES countries(id);
 
 ## _One-to-Many_ or _Many-to-One_ ?
 
-* While many people do not differentiate the two relations, it is just a matter of focus.
+- While many people do not differentiate the two relations, it is just a matter of focus.
 
-* If we take the example shown: countries and cities. A country is consisted of many cities, in this case, coutry to city is a _one-to-many_ relationship.
+- If we take the example shown: countries and cities. A country is consisted of many cities, in this case, coutry to city is a _one-to-many_ relationship.
 
-* On the other hand, if we focus on the cities, we can say that many cities are part of one country, resulting in a _many-to-one_ relationship.
+- On the other hand, if we focus on the cities, we can say that many cities are part of one country, resulting in a _many-to-one_ relationship.
+
 ---
 
 # _Many-to-Many_
@@ -906,12 +909,13 @@ li {
 
 ![h:350](./assets/many-to-many.png)
 
-* _Many-to-many_ relation between `customers` and `flights` throught the `passengers` table
-* The `flights` table has two _one-to-one_ relationships with `airports` table.
+- _Many-to-many_ relation between `customers` and `flights` throught the `passengers` table
+- The `flights` table has two _one-to-one_ relationships with `airports` table.
 
 ---
 
 <!-- _class: invert -->
+
 # _Many-to-Many_
 
 To achieve a many-to-many relationship between tables:
@@ -928,6 +932,7 @@ To achieve a many-to-many relationship between tables:
   font-size: 90%;
 }
 </style>
+
 # _Many-to-Many_
 
 Creating the tables:
@@ -981,20 +986,11 @@ REFERENCES airports(id);
 
 ## Querying with SQL
 
-* So far, we have focused on _changing_ SQL databases, both the data itself (using DML) and the "structure" schema (using DDL), defining tables, columns and relations.
+- So far, we have focused on _changing_ SQL databases, both the data itself (using DML) and the "structure" schema (using DDL), defining tables, columns and relations.
 
-* More often than not, though, databases are _read_ rather than changed
+- More often than not, though, databases are _read_ rather than changed
 
-* Because of that, SQL has several features to **query** the data and that's what we will take a look at now...
-
----
-<!-- _class: invert -->
-
-## Querying with SQL
-
-* The `SELECT` statement was the first DML that was presented, and it is the command we will use to make more complex queries.
-
-* We already know how to specify which _columns_ and which _table_ we want to get results, but that is pretty limited
+- Because of that, SQL has several features to **query** the data and that's what we will take a look at now...
 
 ---
 
@@ -1002,11 +998,9 @@ REFERENCES airports(id);
 
 ## Querying with SQL
 
-* What if we want to filter the results based on *relations* between two (or more) tables?
+- The `SELECT` statement was the first DML that was presented, and it is the command we will use to make more complex queries.
 
-* What about *ordering* the results based on some criteria?
-
-* How can we generate *analytics* from a database?
+- We already know how to specify which _columns_ and which _table_ we want to get results, but that is pretty limited
 
 ---
 
@@ -1014,9 +1008,11 @@ REFERENCES airports(id);
 
 ## Querying with SQL
 
-* To answer all those questions, let's use a database as an example.
-* There's a `start.sh` script that can be used in [Gitpod](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples) to create a PostgreSQL database exactly like the one used in the next slides.
-* [PSQL](https://www.postgresql.org/docs/current/app-psql.html) was used in the slides, but any other tool works just as fine ([PgAdmin](https://www.pgadmin.org/), DataGrip, etc)
+- What if we want to filter the results based on _relations_ between two (or more) tables?
+
+- What about _ordering_ the results based on some criteria?
+
+- How can we generate _analytics_ from a database?
 
 ---
 
@@ -1024,9 +1020,19 @@ REFERENCES airports(id);
 
 ## Querying with SQL
 
-* Here's the database schema diagram used in the examples:
-![w:1000](./assets/blog-schema.png)
-* It is a blog database with six tables
+- To answer all those questions, let's use a database as an example.
+- There's a `start.sh` script that can be used in [Gitpod](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples) to create a PostgreSQL database exactly like the one used in the next slides.
+- [PSQL](https://www.postgresql.org/docs/current/app-psql.html) was used in the slides, but any other tool works just as fine ([PgAdmin](https://www.pgadmin.org/), DataGrip, etc)
+
+---
+
+<!-- _class: invert -->
+
+## Querying with SQL
+
+- Here's the database schema diagram used in the examples:
+  ![w:1000](./assets/blog-schema.png)
+- It is a blog database with six tables
 
 ---
 
@@ -1039,13 +1045,13 @@ REFERENCES airports(id);
 
 ## The `LIMIT` clause
 
-* To limit the results returned, we can append the `LIMIT` keyword in a query, followed by the maximum number of results expected:
+- To limit the results returned, we can append the `LIMIT` keyword in a query, followed by the maximum number of results expected:
 
 ```sql
 SELECT * FROM table_name LIMIT 5;
 ```
 
-* When in doubt of the size of a table, it is a good practice to put a limit in the results to prevent slow queries (imagine querying a table with _thousands_ of rows 😅)
+- When in doubt of the size of a table, it is a good practice to put a limit in the results to prevent slow queries (imagine querying a table with _thousands_ of rows 😅)
 
 ---
 
@@ -1058,11 +1064,11 @@ SELECT * FROM table_name LIMIT 5;
 
 ## The `LIMIT` clause
 
-* Seeing the query in practice:
+- Seeing the query in practice:
 
 ```sql
 blog=# SELECT * FROM users LIMIT 5;
- id |  name   |       email       | city_id | role_id 
+ id |  name   |       email       | city_id | role_id
 ----+---------+-------------------+---------+---------
   1 | Viviana | viviana@email.com |       5 |       1
   2 | Callan  | callan@email.com  |       2 |       2
@@ -1074,7 +1080,6 @@ blog=# SELECT * FROM users LIMIT 5;
 
 ---
 
-
 <!-- _class: invert -->
 <style scoped>
 .language-sql {
@@ -1084,18 +1089,18 @@ blog=# SELECT * FROM users LIMIT 5;
 
 ## The `WHERE` clause
 
-* Another way we can refine SQL queries is using the `WHERE` keyword:
+- Another way we can refine SQL queries is using the `WHERE` keyword:
 
 ```sql
 SELECT * FROM table_name
 WHERE condition;
 ```
 
-* The `condition` can vary a lot. Some examples are:
-  * a numeric column is greater than some value
-  * a column is not null
-  * the row was created before a date
-  * and so on...
+- The `condition` can vary a lot. Some examples are:
+  - a numeric column is greater than some value
+  - a column is not null
+  - the row was created before a date
+  - and so on...
 
 ---
 
@@ -1108,7 +1113,7 @@ WHERE condition;
 
 ## The `WHERE` clause
 
-* In the `LIMIT` example, there was a column `role_id` with different values (1 and 2). Let's filter only the rows where the column `role_id` is equal to 2:
+- In the `LIMIT` example, there was a column `role_id` with different values (1 and 2). Let's filter only the rows where the column `role_id` is equal to 2:
 
 ```sql
 SELECT * FROM users
@@ -1116,6 +1121,7 @@ WHERE role_id=2;
 ```
 
 ---
+
 <!-- _class: invert -->
 <style scoped>
 .language-sql {
@@ -1127,15 +1133,16 @@ WHERE role_id=2;
 
 ```sql
 blog=# SELECT * FROM users WHERE role_id=2;
- id |  name  |      email       | city_id | role_id 
+ id |  name  |      email       | city_id | role_id
 ----+--------+------------------+---------+---------
   2 | Callan | callan@email.com |       2 |       2
   5 | Amelia | amelia@email.com |       3 |       2
 (2 rows)
 ```
-* We can see there are two users with the `role_id` equal to 2
----
 
+- We can see there are two users with the `role_id` equal to 2
+
+---
 
 <!-- _class: invert -->
 <style scoped>
@@ -1146,15 +1153,15 @@ blog=# SELECT * FROM users WHERE role_id=2;
 
 ## The `ORDER BY` clause
 
-* If we want to specify how the results should be organized, we can use the `ORDER BY` statement:
+- If we want to specify how the results should be organized, we can use the `ORDER BY` statement:
 
 ```sql
 SELECT * FROM table_name
 ORDER BY column ASC;
 ```
 
-* The `ASC` (default) keyword orders the results in **asc**ending order
-* The `DESC` keyword orders the result in **desc**ending order
+- The `ASC` (default) keyword orders the results in **asc**ending order
+- The `DESC` keyword orders the result in **desc**ending order
 
 ---
 
@@ -1167,7 +1174,7 @@ ORDER BY column ASC;
 
 ## The `ORDER BY` clause
 
-* Let's order the cities stored in table `cities` based on the `population` colum, from the most inhabited to the least inhabited:
+- Let's order the cities stored in table `cities` based on the `population` colum, from the most inhabited to the least inhabited:
 
 ```sql
 SELECT * FROM cities
@@ -1175,6 +1182,7 @@ ORDER BY population DESC;
 ```
 
 ---
+
 <!-- _class: invert -->
 <style scoped>
 .language-sql {
@@ -1186,7 +1194,7 @@ ORDER BY population DESC;
 
 ```sql
 blog=# SELECT * FROM cities ORDER BY population DESC;
- id |      name      | population 
+ id |      name      | population
 ----+----------------+------------
   1 | São Paulo      |   12396372
   2 | Rio de Janeiro |    6775561
@@ -1206,24 +1214,35 @@ li {
 
 # Joining Tables
 
-* We have seen how to filter results with `WHERE` and ordering with `ORDER`, and we also know how to create _relations_ using `FOREIGN KEY`s.
+- We have seen how to filter results with `WHERE` and ordering with `ORDER`, and we also know how to create _relations_ using `FOREIGN KEY`s.
 
-* But until now, we only get results from a single table 😔
-* That makes it hard to truly understand some data, for example:
-  * What is the actual role of a user with `role_id=2`?
-  * Who is the author of a post with `user_id=5`?
-  * What is the city with the highest number of blog posts?
-
+- But until now, we only get results from a single table 😔
+- That makes it hard to truly understand some data, for example:
+  - What is the actual role of users with `role_id=2`?
+  - Who is the author of posts with `user_id=5`?
+  - What are the cities with the highest number of blog posts?
 
 ---
 
 # Joining Tables
 
-* To answer all those questions we are going to use the `JOIN` statement.
+- To answer all those questions we are going to use the `JOIN` statement.
 
-* SQL joins allow us to combine two or more tables based on a condition, which usually is a pair of columns that are equal on the tables being joined (_equi JOINs_)
+- SQL joins allow us to combine two or more tables based on a condition, which usually is a pair of columns that are equal on the tables being joined (_equi JOINs_)
 
-* It **is** possible to join with non-equal conditions (_non-equi JOINs_)
+- It **is** possible to join with non-equal conditions (_non-equi JOINs_)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- The `LEFT JOIN` clause returns _all_ the values from the "left" table and also the values from the "right" table where the _join condition_ is met.
+
+- Let's use a Venn diagram to visualize it better...
 
 ---
 
@@ -1234,6 +1253,126 @@ li {
 ## `LEFT JOIN`
 
 ![h:400](./assets/left-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- The basic syntax is:
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+LEFT JOIN table_two
+ON condition;
+```
+
+ <!-- We have to define which columns to be returned, but since there might be columns with the same name in different tables, we also need to specify the table name along with the column name. The condition may vary but usually is a equality between the columns used to create the relationships -->
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- Cheking what is the actual role of the users:
+
+```sql
+SELECT users.name, roles.name
+FROM users
+LEFT JOIN roles
+ON users.role_id = roles.id
+LIMIT 5;
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- Cheking what is the actual role of the users:
+
+```sql
+  name   | name
+---------+-------
+ Viviana | admin
+ Callan  | basic
+ Aila    | admin
+ Moses   | admin
+ Amelia  | basic
+(5 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- To improve readability or simplify, we can use the `AS` clause to rename both the elements of the query and the columns returned:
+
+```sql
+SELECT u.name, r.name AS role
+FROM users AS u
+LEFT JOIN roles AS r
+ON u.role_id = r.id
+LIMIT 5;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  li {
+    font-size: 70%;
+  }
+  </style>
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+- To improve readability or simplify, we can use the `AS` clause to rename both the elements of the query and the columns returned:
+
+```sql
+  name   | role
+---------+-------
+ Viviana | admin
+ Callan  | basic
+ Aila    | admin
+ Moses   | admin
+ Amelia  | basic
+(5 rows)
+```
+
+---
+
+<style scoped>
+  li {
+    font-size: 80%;
+  }
+</style>
+
+## The `JOIN` statemnet
+
+### `LEFT JOIN`
+
+- In the example used, the results were limited to 5 rows using the `LIMIT 5` statement.
+
+- But even if the results were not limited, all the users would have a matching role (you can check it yourself 😉).
+
+- If there were a user **without** a `role_id` defined (not possible because of the constraint `NOT NULL`), then the `role` column would be `NULL`
 
 ---
 
