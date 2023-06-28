@@ -1198,6 +1198,105 @@ blog=# SELECT * FROM cities ORDER BY population DESC;
 
 ---
 
+<style scoped>
+li {
+  font-size: 80%;
+}
+</style>
+
+# Joining Tables
+
+* We have seen how to filter results with `WHERE` and ordering with `ORDER`, and we also know how to create _relations_ using `FOREIGN KEY`s.
+
+* But until now, we only get results from a single table 😔
+* That makes it hard to truly understand some data, for example:
+  * What is the actual role of a user with `role_id=2`?
+  * Who is the author of a post with `user_id=5`?
+  * What is the city with the highest number of blog posts?
+
+
+---
+
+# Joining Tables
+
+* To answer all those questions we are going to use the `JOIN` statement.
+
+* SQL joins allow us to combine two or more tables based on a condition, which usually is a pair of columns that are equal on the tables being joined (_equi JOINs_)
+
+* It **is** possible to join with non-equal conditions (_non-equi JOINs_)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN`
+
+![h:400](./assets/left-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN` (excluding)
+
+![h:400](./assets/left-excluding-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `RIGHT JOIN`
+
+![h:400](./assets/right-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `RIGHT JOIN` (excluding)
+
+![h:400](./assets/right-excluding-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `INNER JOIN`
+
+![h:400](./assets/inner-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `FULL OUTER JOIN`
+
+![h:400](./assets/full-outer-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `FULL OUTER JOIN` (excluding)
+
+![h:400](./assets/full-excluding-join.png)
+
+---
+
 <!-- _class: invert -->
 
 # Agenda
