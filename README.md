@@ -40,8 +40,8 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 
 6. Querying with SQL:
    - [x]  Limiting resuts with LIMIT.
-   - [ ]  Filtering data with WHERE clause.
-   - [ ]  Sorting data with ORDER BY clause.
+   - [x]  Filtering data with WHERE clause.
+   - [x]  Sorting data with ORDER BY clause.
    - [ ]  Combining data with JOIN clauses.
    - [ ]  Aggregating data with GROUP BY clause.
 

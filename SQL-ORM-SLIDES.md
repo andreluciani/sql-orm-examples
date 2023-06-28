@@ -1016,7 +1016,7 @@ REFERENCES airports(id);
 
 * To answer all those questions, let's use a database as an example.
 * There's a `start.sh` script that can be used in [Gitpod](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples) to create a PostgreSQL database exactly like the one used in the next slides.
-* [PSQL](https://www.postgresql.org/docs/current/app-psql.html) will be used in the slides, but any other tool works just as fine (PgAdmin, DataGrip, etc)
+* [PSQL](https://www.postgresql.org/docs/current/app-psql.html) was used in the slides, but any other tool works just as fine ([PgAdmin](https://www.pgadmin.org/), DataGrip, etc)
 
 ---
 
@@ -1069,6 +1069,130 @@ blog=# SELECT * FROM users LIMIT 5;
   3 | Aila    | aila@email.com    |       5 |       1
   4 | Moses   | moses@email.com   |       2 |       1
   5 | Amelia  | amelia@email.com  |       3 |       2
+(5 rows)
+```
+
+---
+
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `WHERE` clause
+
+* Another way we can refine SQL queries is using the `WHERE` keyword:
+
+```sql
+SELECT * FROM table_name
+WHERE condition;
+```
+
+* The `condition` can vary a lot. Some examples are:
+  * a numeric column is greater than some value
+  * a column is not null
+  * the row was created before a date
+  * and so on...
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 140%;
+}
+</style>
+
+## The `WHERE` clause
+
+* In the `LIMIT` example, there was a column `role_id` with different values (1 and 2). Let's filter only the rows where the column `role_id` is equal to 2:
+
+```sql
+SELECT * FROM users
+WHERE role_id=2;
+```
+
+---
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `WHERE` clause
+
+```sql
+blog=# SELECT * FROM users WHERE role_id=2;
+ id |  name  |      email       | city_id | role_id 
+----+--------+------------------+---------+---------
+  2 | Callan | callan@email.com |       2 |       2
+  5 | Amelia | amelia@email.com |       3 |       2
+(2 rows)
+```
+* We can see there are two users with the `role_id` equal to 2
+---
+
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `ORDER BY` clause
+
+* If we want to specify how the results should be organized, we can use the `ORDER BY` statement:
+
+```sql
+SELECT * FROM table_name
+ORDER BY column ASC;
+```
+
+* The `ASC` (default) keyword orders the results in **asc**ending order
+* The `DESC` keyword orders the result in **desc**ending order
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 140%;
+}
+</style>
+
+## The `ORDER BY` clause
+
+* Let's order the cities stored in table `cities` based on the `population` colum, from the most inhabited to the least inhabited:
+
+```sql
+SELECT * FROM cities
+ORDER BY population DESC;
+```
+
+---
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `ORDER BY` clause
+
+```sql
+blog=# SELECT * FROM cities ORDER BY population DESC;
+ id |      name      | population 
+----+----------------+------------
+  1 | São Paulo      |   12396372
+  2 | Rio de Janeiro |    6775561
+  3 | Brasília       |    3094325
+  4 | Salvador       |    2900319
+  5 | Fortaleza      |    2703391
 (5 rows)
 ```
 
