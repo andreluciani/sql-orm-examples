@@ -26,19 +26,20 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 
 4. SQL Relationships:
    - [x]  ONE-TO-ONE
-   - [ ]  ONE-TO-MANY
-   - [ ]  MANY-TO-MANY
+   - [x]  ONE-TO-MANY
+   - [x]  MANY-TO-MANY
 
 5. SQL Constraints:
    - [x]  NOT NULL - Ensures that a column cannot have a NULL value
    - [x]  UNIQUE - Ensures that all values in a column are different
    - [x]  PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
-   - [ ]  FOREIGN KEY - Prevents actions that would destroy links between tables
+   - [x]  FOREIGN KEY - Prevents actions that would destroy links between tables
    - [x]  CHECK - Ensures that the values in a column satisfies a specific condition
-   - [ ]  DEFAULT - Sets a default value for a column if no value is specified
-   - [ ]  CREATE INDEX - Used to create and retrieve data from the database very quickly
+   - [x]  DEFAULT - Sets a default value for a column if no value is specified
+   - [x]  CREATE INDEX - Used to create and retrieve data from the database very quickly
 
 6. Querying with SQL:
+   - [x]  Limiting resuts with LIMIT.
    - [ ]  Filtering data with WHERE clause.
    - [ ]  Sorting data with ORDER BY clause.
    - [ ]  Combining data with JOIN clauses.

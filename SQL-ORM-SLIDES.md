@@ -514,6 +514,30 @@ li {
   <!-- _class: invert -->
 <style scoped>
 li {
+  font-size: 30px;
+  padding-left: 1px;
+}
+</style>
+
+### The `CREATE TABLE` statement
+
+#### Constraints
+
+- Common constraints used in columns (a few more):
+
+  - `FOREIGN KEY` - Link tables by storing the `PRIMARY KEY`of another table.
+
+  - `DEFAULT` - Sets a default value for a column if no value is specified
+
+  - `CREATE INDEX` - Used to create and retrieve data from the database very quickly (more on that later)
+
+ <!-- The costraints are a powerful way to prevent wrong inputs. They are a set of rules that must be met when modifying data in a database. -->
+
+---
+
+  <!-- _class: invert -->
+<style scoped>
+li {
   font-size: 32px;
 }
 .language-sql {
@@ -720,6 +744,7 @@ DROP TABLE
 ---
 
 <!-- _class: invert -->
+<!-- _transition: cover -->
 
 # Database Relationships
 
@@ -730,6 +755,10 @@ There are three main SQL database relationships:
 3. Many-to-many
 
 **Let's see when to use each of them!**
+
+---
+
+# _One-to-One_
 
 ---
 
@@ -764,6 +793,7 @@ To achieve a one-to-one relationship between tables:
 ---
 
 <!-- _class: invert -->
+<!-- _transition: cover -->
 
 # _One-to-One_
 
@@ -783,6 +813,10 @@ ADD CONSTRAINT users_salaries_fk0
 FOREIGN KEY (user_id)
 REFERENCES users (id);
 ```
+
+---
+
+# _One-to-Many_
 
 ---
 
@@ -845,6 +879,10 @@ REFERENCES countries(id);
 * If we take the example shown: countries and cities. A country is consisted of many cities, in this case, coutry to city is a _one-to-many_ relationship.
 
 * On the other hand, if we focus on the cities, we can say that many cities are part of one country, resulting in a _many-to-one_ relationship.
+---
+
+# _Many-to-Many_
+
 ---
 
 <!-- _class: invert -->
@@ -915,6 +953,7 @@ CREATE TABLE flights (
 ---
 
 <!-- _class: invert -->
+<!-- _transition: cover -->
 
 # _Many-to-Many_
 
@@ -930,6 +969,107 @@ ALTER TABLE flights
 ADD CONSTRAINT flights_fk1
 FOREIGN KEY (to_airport_id)
 REFERENCES airports(id);
+```
+
+---
+
+# Querying with SQL
+
+---
+
+<!-- _class: invert -->
+
+## Querying with SQL
+
+* So far, we have focused on _changing_ SQL databases, both the data itself (using DML) and the "structure" schema (using DDL), defining tables, columns and relations.
+
+* More often than not, though, databases are _read_ rather than changed
+
+* Because of that, SQL has several features to **query** the data and that's what we will take a look at now...
+
+---
+<!-- _class: invert -->
+
+## Querying with SQL
+
+* The `SELECT` statement was the first DML that was presented, and it is the command we will use to make more complex queries.
+
+* We already know how to specify which _columns_ and which _table_ we want to get results, but that is pretty limited
+
+---
+
+<!-- _class: invert -->
+
+## Querying with SQL
+
+* What if we want to filter the results based on *relations* between two (or more) tables?
+
+* What about *ordering* the results based on some criteria?
+
+* How can we generate *analytics* from a database?
+
+---
+
+<!-- _class: invert -->
+
+## Querying with SQL
+
+* To answer all those questions, let's use a database as an example.
+* There's a `start.sh` script that can be used in [Gitpod](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples) to create a PostgreSQL database exactly like the one used in the next slides.
+* [PSQL](https://www.postgresql.org/docs/current/app-psql.html) will be used in the slides, but any other tool works just as fine (PgAdmin, DataGrip, etc)
+
+---
+
+<!-- _class: invert -->
+
+## Querying with SQL
+
+* Here's the database schema diagram used in the examples:
+![w:1000](./assets/blog-schema.png)
+* It is a blog database with six tables
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `LIMIT` clause
+
+* To limit the results returned, we can append the `LIMIT` keyword in a query, followed by the maximum number of results expected:
+
+```sql
+SELECT * FROM table_name LIMIT 5;
+```
+
+* When in doubt of the size of a table, it is a good practice to put a limit in the results to prevent slow queries (imagine querying a table with _thousands_ of rows 😅)
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## The `LIMIT` clause
+
+* Seeing the query in practice:
+
+```sql
+blog=# SELECT * FROM users LIMIT 5;
+ id |  name   |       email       | city_id | role_id 
+----+---------+-------------------+---------+---------
+  1 | Viviana | viviana@email.com |       5 |       1
+  2 | Callan  | callan@email.com  |       2 |       2
+  3 | Aila    | aila@email.com    |       5 |       1
+  4 | Moses   | moses@email.com   |       2 |       1
+  5 | Amelia  | amelia@email.com  |       3 |       2
+(5 rows)
 ```
 
 ---
