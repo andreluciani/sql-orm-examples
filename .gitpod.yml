@@ -1,14 +1,9 @@
 image: gitpod/workspace-postgres
 tasks:
   - name: Install Google Chrome
-    before: |
-      sudo apt-get update
-      sudo rm -f google-chrome-stable_current_amd64.deb
-      wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-      sudo dpkg -i google-chrome-stable_current_amd64.deb
-      sudo apt-get -f install -y
-      npm install
-    command: npm start
+    command: |
+      sudo ./init.sh
+      npm install && npm start
 ports:
   - port: 5432
     onOpen: ignore
