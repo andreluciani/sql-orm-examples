@@ -42,8 +42,8 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [x]  Limiting resuts with LIMIT.
    - [x]  Filtering data with WHERE clause.
    - [x]  Sorting data with ORDER BY clause.
-   - [ ]  Combining data with JOIN clauses.
-   - [ ]  Aggregating data with GROUP BY clause.
+   - [x]  Combining data with JOIN clauses.
+   - [x]  Aggregating data with GROUP BY clause.
 
 7. Advanced SQL Concepts:
    - [ ]  Subqueries: using queries within queries.

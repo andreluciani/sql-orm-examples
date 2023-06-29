@@ -1675,9 +1675,9 @@ blog-# WHERE users.city_id IS NULL;
 
 # The `JOIN` statemnet
 
-* There is also another type of `JOIN` which fetches **all** the rows from **both** the left and right tables
+- There is also another type of `JOIN` which fetches **all** the rows from **both** the left and right tables
 
-* This is the `FULL JOIN` and it is basically a `LEFT JOIN`and `RIGHT JOIN` "combined".
+- This is the `FULL JOIN` and it is basically a `LEFT JOIN`and `RIGHT JOIN` "combined".
 
 ---
 
@@ -1734,18 +1734,9 @@ WHERE table_one.column_name IS NULL OR table_two.column_name IS NULL;
 
 # The `JOIN` statement
 
-* There is also another type of join called `CROSS JOIN` which returns the [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) based on the condition, but it has very specific use cases.
+- There is also another type of join called `CROSS JOIN` which returns the [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) based on the condition, but it has very specific use cases.
 
-* SQL joins can be "chained", _i.e._, the result of one `JOIN` operation is joined to another table. Let's see one example...
-
----
-<!-- _class: invert -->
-
-# The `JOIN` statement
-
-* In the `blog` database being used for the examples we have a _many-to-many_ relationship between the `posts` and `images` tables that is achieve **through** the `posts_images` _junction_ table.
-
-* What if we want to list the images URL for each of the posts that have at least one image attached?
+- SQL joins can be "chained", _i.e._, the result of one `JOIN` operation is joined to another table. Let's see one example...
 
 ---
 
@@ -1753,7 +1744,17 @@ WHERE table_one.column_name IS NULL OR table_two.column_name IS NULL;
 
 # The `JOIN` statement
 
-* We can achieve that with the following steps:
+- In the `blog` database being used for the examples we have a _many-to-many_ relationship between the `posts` and `images` tables that is achieved **through** the `posts_images` _junction_ table.
+
+- What if we want to list the images URL for each of the posts that have at least one image attached?
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statement
+
+- We can achieve that with the following steps:
 
   1. Do a `INNER JOIN` between the tables `posts` and `posts_images`
   2. Do another `INNER JOIN` between the results and the `images` table.
@@ -1764,10 +1765,10 @@ WHERE table_one.column_name IS NULL OR table_two.column_name IS NULL;
 
 # The `JOIN` statement
 
-* Results goal:
+- Results goal:
 
 | Post ID | Title      | Images            |
-|---------|------------|-------------------|
+| ------- | ---------- | ----------------- |
 | 1       | How to SQL | www.images.com/12 |
 | 1       | How to SQL | www.images.com/34 |
 | 3       | Git 101    | www.images.com/5  |
@@ -1805,7 +1806,7 @@ ON posts.id = posts_images.post_id;
 #### The `JOIN` statement
 
 ```
- Post ID |                         Title                         
+ Post ID |                         Title
 ---------+-------------------------------------------------------
       19 | 10 Things Mickey Mouse Can Teach Us About Thoughts
       12 | Mickey Mouse - 10 Best Moments
@@ -1862,7 +1863,7 @@ ON posts_images.post_id = posts.id
 #### The `JOIN` statement
 
 ```
- Post ID |                             Title                              |          Images          
+ Post ID |                             Title                              |          Images
 ---------+----------------------------------------------------------------+--------------------------
        4 | 21 Myths About Snakes Debunked                                 | https://onlink.site/yQCF
        4 | 21 Myths About Snakes Debunked                                 | https://onlink.site/iVhX
@@ -1881,6 +1882,169 @@ ON posts_images.post_id = posts.id
       25 | Introducing database - Who Am I And Why Should You Follow Me   | https://onlink.site/YMrl
       26 | Fallen Angel : Fact versus Fiction                             | https://onlink.site/YMrl
 (16 rows)
+```
+
+<!-- That way we achieve our goal! -->
+
+---
+
+# Querying with SQL
+
+- We have already seen how to filter the resulst and order them (and join tables too!)
+
+- We still have to learn how to generate analytics (at least one way of doing that)
+
+- And that way is using the `GROUP BY` clause...
+
+---
+
+<!-- _class: invert -->
+
+## The `GROUP BY` statement
+
+- We use `GROUP BY` to _group_ rows using an _aggregate function_ on one or more columns.
+
+- Some of the possible aggregate functions are:
+
+  - `COUNT()` - returns the number of rows that meet the condition
+
+  - `MAX()`, `MIN()` and `AVG()` - return the maximum, minimum and average of the values
+
+  - `SUM()` - returns the sum of the values
+
+---
+
+<!-- _class: invert -->
+
+## The `GROUP BY` statement
+
+- With `GROUP BY` we can answer:
+
+  - How many users live in the most inhabited city from the `cities` table?
+
+  - Who is the user with most posts?
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  .language-sql {
+    font-size: 150%;
+  }
+</style>
+
+# The `GROUP BY` statement
+
+Basic syntax:
+
+```sql
+SELECT AGG(column_name_one), column_name_two
+FROM table_name
+GROUP BY column_name_two;
+```
+
+- Where `AGG()` is an [aggregate function](https://www.postgresql.org/docs/15/functions-aggregate.html)
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  .language-sql {
+    font-size: 150%;
+  }
+</style>
+
+# The `GROUP BY` statement
+
+Let's start with a query using a single table:
+
+```sql
+SELECT COUNT(image_id), post_id
+FROM posts_images
+GROUP BY post_id
+ORDER BY count DESC;
+```
+
+---
+
+<!-- _class: invert -->
+
+<style scoped>
+  li {
+     font-size: 70%;
+  }
+  .language-sql {
+    font-size: 100%;
+  }
+</style>
+
+### The `GROUP BY` statement
+
+- The result shows the posts ordered by the number of images attached:
+
+```sql
+ count | post_id
+-------+---------
+     3 |       4
+     2 |      25
+     2 |      20
+     2 |       5
+     1 |      12
+     1 |      23
+     1 |      22
+     1 |       8
+     1 |      26
+     1 |      16
+     1 |       7
+(11 rows)
+```
+
+
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  .language-sql {
+    font-size: 150%;
+  }
+</style>
+
+# The `GROUP BY` statement
+
+But we can use `GROUP BY` on joins too:
+
+```sql
+SELECT COUNT(users.id) AS "Users" , cities.name AS "City"
+FROM users
+INNER JOIN cities
+ON users.city_id = cities.id
+GROUP BY cities.name
+ORDER BY "Users" DESC;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  .language-sql {
+    font-size: 150%;
+  }
+</style>
+
+# The `GROUP BY` statement
+
+And get the number of users per city:
+
+```sql
+ Users |      City      
+-------+----------------
+     9 | Salvador
+     7 | Brasília
+     6 | Fortaleza
+     5 | São Paulo
+     3 | Rio de Janeiro
+(5 rows)
 ```
 
 ---
