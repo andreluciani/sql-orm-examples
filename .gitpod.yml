@@ -1,9 +1,7 @@
 image: gitpod/workspace-postgres
 tasks:
-  - name: Install Google Chrome
-    command: |
-      sudo ./init.sh
-      npm install && npm start
+  - name: Build & Serve Slides
+    command: npm install && npm start
 ports:
   - port: 5432
     onOpen: ignore
