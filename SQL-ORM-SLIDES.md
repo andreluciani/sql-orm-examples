@@ -1382,7 +1382,110 @@ LIMIT 5;
 
 ## `LEFT JOIN` (excluding)
 
+- The excluding `LEFT JOIN` returns all the values from the left table that **do not have** a matching row in the right table.
+
+- Let's use a Venn diagram once again...
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN` (excluding)
+
 ![h:400](./assets/left-excluding-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN` (excluding)
+
+- The basic syntax is:
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+LEFT JOIN table_two
+ON table_one.column_name = table_two.column_name;
+WHERE table_two.column_name IS NULL;
+```
+
+ <!-- The difference here is that we add a WHERE clause that filters only results where the column from the right table is NULL. -->
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `LEFT JOIN` (excluding)
+
+- Fetching all the posts that do not have an image attached:
+
+```sql
+SELECT p.title, p_i.id
+FROM posts as p
+LEFT JOIN posts_images as p_i
+ON p.id = p_i.post_id
+WHERE p_i.id IS NULL;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 28px;
+}
+code {
+  font-size: 70%;
+}
+</style>
+
+### `LEFT JOIN` (excluding)
+
+- Fetching all the posts that do not have an image attached:
+
+```
+                             title                              | id
+----------------------------------------------------------------+----
+ Fallen Angel : Fact versus Fiction                             |
+ Can Blue Bottles Dance : An exploration of Memes               |
+ How to Make Your Own Admirable Dress for less than £5          |
+ Mickey Mouse - 10 Best Moments                                 |
+ From Zero to Shape Shifter - Makeover Tips                     |
+ 7 Unmissable YouTube Channels About Thoughts                   |
+ 7 Pictures of Rihanna That We Would Rather Forget              |
+ How to Attract More Admirable Subscribers                      |
+ 10 Awesome Ways to Photograph Blue Bottles                     |
+ Introducing programmer - Who Am I And Why Should You Follow Me |
+ 10 Things Mickey Mouse Can Teach Us About Thoughts             |
+ Snakes Are the New Black                                       |
+ Blue Bottles Are the New Black                                 |
+ The Week: Top Stories About Rihanna                            |
+ How to Increase Your Income Using Just Your Knees.             |
+ 10 Awesome Ways to Photograph Snakes                           |
+ 7 Pictures of Paul McCartney That We Would Rather Forget       |
+ How to Increase Your Income Using Just Your Ankles.            |
+ 20 Dress Reviews in Tweet Form                                 |
+(19 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `RIGHT JOIN`
+
+- The `RIGHT JOIN` works (as you may have guessed) just like the `LEFT JOIN` but in this case the results returned are from the right table.
+
+- Let's use a Venn diagram to visualize it better...
 
 ---
 
@@ -1410,9 +1513,171 @@ LIMIT 5;
 
 # The `JOIN` statemnet
 
+## `RIGHT JOIN`
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+RIGHT JOIN table_two
+ON table_one.column_name = table_two.column_name;
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `RIGHT JOIN` (excluding)
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+RIGHT JOIN table_two
+ON table_one.column_name = table_two.column_name;
+WHERE table_one.column_name IS NULL;
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `INNER JOIN`
+
+- Another type of SQL join is the `INNER JOIN` and in this case, the results returned are the ones that have values defined in **both** tables, _i.e._, the intersection between the tables based on a given condition.
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
 ## `INNER JOIN`
 
 ![h:400](./assets/inner-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `INNER JOIN`
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+INNER JOIN table_two
+ON table_one.column_name = table_two.column_name;
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `INNER JOIN`
+
+- Let's fetch the users and the cities they live:
+
+```sql
+SELECT users.name, cities.name AS city
+FROM users
+INNER JOIN cities
+ON users.city_id = cities.id
+LIMIT 15;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 28px;
+}
+code {
+  font-size: 80%;
+}
+</style>
+
+## `INNER JOIN`
+
+Let's fetch the users and the cities they live:
+
+```sql
+   name   |      city
+----------+----------------
+ Viviana  | Fortaleza
+ Callan   | Rio de Janeiro
+ Aila     | Fortaleza
+ Moses    | Rio de Janeiro
+ Amelia   | Brasília
+ Chandler | Fortaleza
+ Alicia   | Salvador
+ Nehemiah | Fortaleza
+ Everly   | Salvador
+ Kayson   | Brasília
+ Imani    | Brasília
+ Jamie    | São Paulo
+ Ximena   | São Paulo
+ Alexis   | Rio de Janeiro
+ Estrella | São Paulo
+(15 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `INNER JOIN`
+
+- But is there any city without users associated with?
+
+```sql
+SELECT cities.name AS city, users.name
+FROM users
+RIGHT JOIN cities
+ON users.city_id = cities.id
+WHERE city IS NULL;
+```
+
+<!-- Using a RIGHT JOIN (excluding) to check if there is any city without users associated -->
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+```sql
+blog=# SELECT cities.name AS city, users.name
+blog-# FROM users RIGHT JOIN cities
+blog-# ON users.city_id = cities.id
+blog-# WHERE users.city_id IS NULL;
+      city      | name
+----------------+------
+ Belo Horizonte |
+ Manaus         |
+ Curitiba       |
+ Recife         |
+ Goiânia        |
+(5 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+* There is also another type of `JOIN` which fetches **all** the rows from **both** the left and right tables
+
+* This is the `FULL JOIN` and it is basically a `LEFT JOIN`and `RIGHT JOIN` "combined".
 
 ---
 
@@ -1433,6 +1698,190 @@ LIMIT 5;
 ## `FULL OUTER JOIN` (excluding)
 
 ![h:400](./assets/full-excluding-join.png)
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `FULL OUTER JOIN`
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+FULL OUTER JOIN table_two
+ON table_one.column_name = table_two.column_name;
+```
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statemnet
+
+## `FULL OUTER JOIN` (excluding)
+
+```sql
+SELECT table_one.column_name, table_two.column_name
+FROM table_one
+FULL OUTER JOIN table_two
+ON table_one.column_name = table_two.column_name;
+WHERE table_one.column_name IS NULL OR table_two.column_name IS NULL;
+```
+
+---
+
+# The `JOIN` statement
+
+* There is also another type of join called `CROSS JOIN` which returns the [cartesian product](https://en.wikipedia.org/wiki/Cartesian_product) based on the condition, but it has very specific use cases.
+
+* SQL joins can be "chained", _i.e._, the result of one `JOIN` operation is joined to another table. Let's see one example...
+
+---
+<!-- _class: invert -->
+
+# The `JOIN` statement
+
+* In the `blog` database being used for the examples we have a _many-to-many_ relationship between the `posts` and `images` tables that is achieve **through** the `posts_images` _junction_ table.
+
+* What if we want to list the images URL for each of the posts that have at least one image attached?
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statement
+
+* We can achieve that with the following steps:
+
+  1. Do a `INNER JOIN` between the tables `posts` and `posts_images`
+  2. Do another `INNER JOIN` between the results and the `images` table.
+
+---
+
+<!-- _class: invert -->
+
+# The `JOIN` statement
+
+* Results goal:
+
+| Post ID | Title      | Images            |
+|---------|------------|-------------------|
+| 1       | How to SQL | www.images.com/12 |
+| 1       | How to SQL | www.images.com/34 |
+| 3       | Git 101    | www.images.com/5  |
+| ...     | ...        | ...               |
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
+
+# The `JOIN` statement
+
+### Step 1:
+
+```sql
+SELECT posts.id AS "Post ID", posts.title AS "Title"
+FROM posts
+INNER JOIN posts_images
+ON posts.id = posts_images.post_id;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 90%;
+}
+</style>
+
+#### The `JOIN` statement
+
+```
+ Post ID |                         Title                         
+---------+-------------------------------------------------------
+      19 | 10 Things Mickey Mouse Can Teach Us About Thoughts
+      12 | Mickey Mouse - 10 Best Moments
+      24 | 21 Myths About Blue bottles Debunked
+      12 | Mickey Mouse - 10 Best Moments
+      11 | How to Make Your Own Admirable Dress for less than £5
+      21 | 10 Awesome Ways to Photograph Blue Bottles
+      27 | Can Blue Bottles Dance : An exploration of Memes
+      13 | How to Attract More Admirable Subscribers
+      28 | Blue Bottles Are the New Black
+      10 | From Zero to Shape Shifter - Makeover Tips
+      23 | How to Increase Your Income Using Just Your Knees.
+      19 | 10 Things Mickey Mouse Can Teach Us About Thoughts
+      27 | Can Blue Bottles Dance : An exploration of Memes
+      23 | How to Increase Your Income Using Just Your Knees.
+       2 | 7 Pictures of Rihanna That We Would Rather Forget
+      13 | How to Attract More Admirable Subscribers
+(16 rows)
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 150%;
+}
+</style>
+
+# The `JOIN` statement
+
+### Step 2:
+
+```diff
+- SELECT posts.id AS "Post ID", posts.title AS "Title"
++ SELECT posts.id AS "Post ID", posts.title AS "Title", images.img_url as "Images"
+FROM posts_images
+INNER JOIN posts
+ON posts_images.post_id = posts.id
++ INNER JOIN images
++ ON posts_images.image_id = images.id
++ ORDER BY posts.id;
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 90%;
+}
+</style>
+
+#### The `JOIN` statement
+
+```
+ Post ID |                             Title                              |          Images          
+---------+----------------------------------------------------------------+--------------------------
+       4 | 21 Myths About Snakes Debunked                                 | https://onlink.site/yQCF
+       4 | 21 Myths About Snakes Debunked                                 | https://onlink.site/iVhX
+       4 | 21 Myths About Snakes Debunked                                 | https://onlink.site/93iP
+       5 | Introducing programmer - Who Am I And Why Should You Follow Me | https://onlink.site/AuUT
+       5 | Introducing programmer - Who Am I And Why Should You Follow Me | https://onlink.site/93iP
+       7 | Can Snakes Dance : An exploration of Memes                     | https://onlink.site/YMrl
+       8 | Snakes Are the New Black                                       | https://onlink.site/AuUT
+      12 | Mickey Mouse - 10 Best Moments                                 | https://onlink.site/yQCF
+      16 | The Week: Top Stories About Rihanna                            | https://onlink.site/iVhX
+      20 | Mistakes That Snakes Make and How to Avoid Them                | https://onlink.site/AuUT
+      20 | Mistakes That Snakes Make and How to Avoid Them                | https://onlink.site/93iP
+      22 | 7 Pictures of Paul McCartney That We Would Rather Forget       | https://onlink.site/iVhX
+      23 | How to Increase Your Income Using Just Your Knees.             | https://onlink.site/93iP
+      25 | Introducing database - Who Am I And Why Should You Follow Me   | https://onlink.site/AuUT
+      25 | Introducing database - Who Am I And Why Should You Follow Me   | https://onlink.site/YMrl
+      26 | Fallen Angel : Fact versus Fiction                             | https://onlink.site/YMrl
+(16 rows)
+```
 
 ---
 
