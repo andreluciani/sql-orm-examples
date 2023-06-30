@@ -2359,6 +2359,66 @@ VALUES ('Nothing is impossible'),
 
 <!-- _class: invert -->
 
+### An Example With Go
+
+Here is the data stored ready to be fetched:
+
+```
+$ psql quotes_db 
+quotes_db=# SELECT * FROM quotes;
+ id |                  quote                   
+----+------------------------------------------
+  1 | Nothing is impossible
+  2 | If you`re going through hell, keep going
+  3 | We need much less than we think we need
+  4 | If things go wrong, don`t go with them
+  5 | Whatever you are, be a good one
+(5 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- Instead of using `psql` we want to query the database **from the server**.
+- To achieve that we need to _connect_ to the database (DB) and then _do the query_ to get a quote e and return it in the response.
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- To connect to the DB we are going to use the `database/sql` Go native package and also a PostgreSQL [driver](https://github.com/golang/go/wiki/SQLDrivers). In this example, [`lib/pq`](https://github.com/lib/pq).
+
+```
+go mod init go-orm-example
+go get -u github.com/lib/pq
+```
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- Next, let's update the code to create the DB connection:
+
+```diff
+import (
+	"log"
+	"math/rand"
+	"net/http"
+)
+
+
+```
+---
+
+
+<!-- _class: invert -->
+
 # Agenda
 
 - ![1](https://icongr.am/material/numeric-1-circle.svg?color=ffffff) **~~SQL~~**
