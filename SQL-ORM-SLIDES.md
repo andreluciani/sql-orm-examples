@@ -2124,17 +2124,236 @@ The next slides will introduce more advanced concepts, all of them are very powe
 
 ---
 
-<style scoped>
-section li em {
-  font-size: 25px;
-}
-</style>
-
 # ![2](https://icongr.am/material/numeric-2-circle.svg?color=666666) ORM
 
-- ...
+### What is an ORM?
+
+ORM is a technique that uses _object-oriented programming_ to interact with databases.
 
  <!-- Presenter notes. -->
+
+---
+
+<!-- _class: invert -->
+
+<style scoped>
+  table {
+    font-size: 80%;
+  }
+  </style>
+
+##### ORM libraries are available in all languages
+
+|                                    **Language**                                    |        **ORM Libraries**         |
+| :--------------------------------------------------------------------------------: | :------------------------------: |
+| ![](https://icongr.am/simple/nodejs.svg?size=45&color=ffffff&colored=false) NodeJS |       Sequelize<br>Prisma        |
+| ![](https://icongr.am/simple/python.svg?size=45&color=ffffff&colored=false) Python | SQLAlchemy<br>Django<br>SQLModel |
+|     ![](https://icongr.am/simple/go.svg?size=45&color=ffffff&colored=false) Go     |           GORM<br>REL            |
+|   ![](https://icongr.am/simple/java.svg?size=45&color=ffffff&colored=false) Java   |     Hibernate<br>EclipseLink     |
+|   ![](https://icongr.am/simple/csharp.svg?size=45&color=ffffff&colored=false) C#   |       Entity<br>NHibernate       |
+|                                                                                    |                                  |
+
+<!-- _class: invert -->
+
+# An Example With Go
+
+Let's build a simple HTTP server that returns a random motivational quote.
+
+We can start with the implementation of the endpoint `/quote` with a hard coded value.
+
+---
+
+<!-- _class: invert -->
+
+Starter code: `main.go`
+
+```go
+package main
+
+import (
+	"log"
+	"net/http"
+)
+
+func quoteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("Nothing is impossible.\n"))
+}
+
+func main() {
+	http.HandleFunc("/quote", quoteHandler)
+
+	log.Println("Listening on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+---
+
+
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- We can spin up the server:
+
+```
+$ go run main.go
+2023/06/30 00:53:16 Listening on port 8080
+```
+
+And make a request:
+
+```
+$ curl http://localhost:8080/quote
+Nothing is impossible.
+```
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- Awesome! We've got our first quote.
+
+- But we will need more quotes to randomize the reponse.
+
+- To do that, instead of a single hardcoded quote, let's create a list of quotes.
+
+---
+
+<!-- _class: invert -->
+
+```go
+import (
+	"log"
+	"math/rand"
+	"net/http"
+)
+
+var quotes = []string{
+	"Nothing is impossible.\n",
+	"If you're going through hell, keep going.\n",
+	"We need much less than we think we need.\n",
+	"If things go wrong, don't go with them.\n",
+	"Whatever you are, be a good one.\n",
+}
+
+func quoteHandler(w http.ResponseWriter, r *http.Request) {
+	index := rand.Intn(len(quotes))
+	quote := quotes[index]
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte(quote))
+}
+
+```
+
+
+
+---
+
+
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- Running the server again:
+
+```
+$ go run main.go
+2023/06/30 00:53:16 Listening on port 8080
+```
+
+And making a few requests:
+
+```
+$ curl http://localhost:8080/quote
+Whatever you are, be a good one.
+$ curl http://localhost:8080/quote
+If you're going through hell, keep going.
+$ curl http://localhost:8080/quote
+Nothing is impossible.
+```
+
+---
+
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- Beautiful! We already are returning random quotes.
+- But... this will not scale well, of course. What if we want to store hundreds or even thousands of quotes? :thinking:
+- That's when a database comes in handy. And the in the next step, we are going to connect to a PostgreSQL database so we can separate the concerns.
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+
+
+<div class="columns red">
+<div class="border-right-white">
+Current
+
+![h:370](./assets/go-server.png)
+
+</div>
+<div>
+Goal
+
+![h:370](./assets/go-server-postgres.png)
+
+</div>
+</div>
+
+---
+
+<!-- _class: invert -->
+### An Example With Go
+
+- In the diagram showed, the Go server and the PostgreSQL server are different services, but will not necessarely run on different computers.
+
+- Before we connect to the database, the database must be ready to receive connections.
+
+- We're going to see how to do it, it is quite simple!
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+1. If not installed already, install [PostgreSQL](https://www.postgresql.org/download/)
+2. Create a database called `quotes_db` and connect to it:
+```bash
+psql
+DROP DATABASE IF EXISTS quotes_db;
+CREATE DATABASE quotes_db;
+\c quotes_db
+```
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+3. Create a table called `quotes` and add some values:
+```sql
+CREATE TABLE quotes (id serial PRIMARY KEY, quote varchar NOT NULL);
+INSERT INTO quotes(quote)
+VALUES ('Nothing is impossible'),
+    ('If you`re going through hell, keep going'),
+    ('We need much less than we think we need'),
+    ('If things go wrong, don`t go with them'),
+    ('Whatever you are, be a good one');
+```
 
 ---
 
@@ -2148,7 +2367,7 @@ section li em {
 - ![3](https://icongr.am/material/numeric-3-circle.svg?color=ffffff) **Best Practices and Tips**
   - Performance, security and debugging
 
-<!-- With the SQL part complete, let's dive in ORMs -->
+<!-- That was a wrap. Let's take a look at the best practices and some tips regarding SQL and ORMs -->
 
 ---
 

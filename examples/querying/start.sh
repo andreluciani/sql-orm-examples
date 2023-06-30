@@ -1,5 +1,5 @@
-
 #!/bin/bash
+
 {
     cat <<-eof
     DROP DATABASE IF EXISTS blog;
