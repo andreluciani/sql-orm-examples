@@ -2142,7 +2142,7 @@ ORM is a technique that uses _object-oriented programming_ to interact with data
   }
   </style>
 
-##### ORM libraries are available in all languages
+##### Here is a list of ORM libraries for different languages
 
 |                                    **Language**                                    |        **ORM Libraries**         |
 | :--------------------------------------------------------------------------------: | :------------------------------: |
@@ -2152,6 +2152,8 @@ ORM is a technique that uses _object-oriented programming_ to interact with data
 |   ![](https://icongr.am/simple/java.svg?size=45&color=ffffff&colored=false) Java   |     Hibernate<br>EclipseLink     |
 |   ![](https://icongr.am/simple/csharp.svg?size=45&color=ffffff&colored=false) C#   |       Entity<br>NHibernate       |
 |                                                                                    |                                  |
+
+---
 
 <!-- _class: invert -->
 
@@ -2171,26 +2173,24 @@ Starter code: `main.go`
 package main
 
 import (
-	"log"
-	"net/http"
+  "log"
+  "net/http"
 )
 
 func quoteHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("Nothing is impossible.\n"))
+  w.Header().Set("Content-Type", "text/plain")
+  w.Write([]byte("Nothing is impossible.\n"))
 }
 
 func main() {
-	http.HandleFunc("/quote", quoteHandler)
+  http.HandleFunc("/quote", quoteHandler)
 
-	log.Println("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+  log.Println("Listening on port 8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
 
 ---
-
-
 
 <!-- _class: invert -->
 
@@ -2228,33 +2228,29 @@ Nothing is impossible.
 
 ```go
 import (
-	"log"
-	"math/rand"
-	"net/http"
+  "log"
+  "math/rand"
+  "net/http"
 )
 
 var quotes = []string{
-	"Nothing is impossible.\n",
-	"If you're going through hell, keep going.\n",
-	"We need much less than we think we need.\n",
-	"If things go wrong, don't go with them.\n",
-	"Whatever you are, be a good one.\n",
+  "Nothing is impossible.\n",
+  "If you're going through hell, keep going.\n",
+  "We need much less than we think we need.\n",
+  "If things go wrong, don't go with them.\n",
+  "Whatever you are, be a good one.\n",
 }
 
 func quoteHandler(w http.ResponseWriter, r *http.Request) {
-	index := rand.Intn(len(quotes))
-	quote := quotes[index]
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(quote))
+  index := rand.Intn(len(quotes))
+  quote := quotes[index]
+  w.Header().Set("Content-Type", "text/plain")
+  w.Write([]byte(quote))
 }
 
 ```
 
-
-
 ---
-
-
 
 <!-- _class: invert -->
 
@@ -2280,22 +2276,19 @@ Nothing is impossible.
 
 ---
 
-
 <!-- _class: invert -->
 
 ### An Example With Go
 
 - Beautiful! We already are returning random quotes.
 - But... this will not scale well, of course. What if we want to store hundreds or even thousands of quotes? :thinking:
-- That's when a database comes in handy. And the in the next step, we are going to connect to a PostgreSQL database so we can separate the concerns.
+- That's when a database comes in handy. In the next step, we are going to connect to a PostgreSQL database so we can separate the concerns.
 
 ---
 
 <!-- _class: invert -->
 
 ### An Example With Go
-
-
 
 <div class="columns red">
 <div class="border-right-white">
@@ -2315,6 +2308,7 @@ Goal
 ---
 
 <!-- _class: invert -->
+
 ### An Example With Go
 
 - In the diagram showed, the Go server and the PostgreSQL server are different services, but will not necessarely run on different computers.
@@ -2331,6 +2325,7 @@ Goal
 
 1. If not installed already, install [PostgreSQL](https://www.postgresql.org/download/)
 2. Create a database called `quotes_db` and connect to it:
+
 ```bash
 psql
 DROP DATABASE IF EXISTS quotes_db;
@@ -2345,6 +2340,7 @@ CREATE DATABASE quotes_db;
 ### An Example With Go
 
 3. Create a table called `quotes` and add some values:
+
 ```sql
 CREATE TABLE quotes (id serial PRIMARY KEY, quote varchar NOT NULL);
 INSERT INTO quotes(quote)
@@ -2364,9 +2360,9 @@ VALUES ('Nothing is impossible'),
 Here is the data stored ready to be fetched:
 
 ```
-$ psql quotes_db 
+$ psql quotes_db
 quotes_db=# SELECT * FROM quotes;
- id |                  quote                   
+ id |                  quote
 ----+------------------------------------------
   1 | Nothing is impossible
   2 | If you`re going through hell, keep going
@@ -2391,29 +2387,276 @@ quotes_db=# SELECT * FROM quotes;
 
 ### An Example With Go
 
-- To connect to the DB we are going to use the `database/sql` Go native package and also a PostgreSQL [driver](https://github.com/golang/go/wiki/SQLDrivers). In this example, [`lib/pq`](https://github.com/lib/pq).
+- To connect to the DB we are going to use the `database/sql` native Go package and also a PostgreSQL [driver](https://github.com/golang/go/wiki/SQLDrivers). In this example, [`lib/pq`](https://github.com/lib/pq).
 
 ```
 go mod init go-orm-example
 go get -u github.com/lib/pq
 ```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 28px;
+}
+.language-go {
+  font-size:65%;
+}
+</style>
+
+#### An Example With Go
+
+- Next, let's update the code to create the DB connection:
+
+```go
+import (
+  "database/sql"
+  "log"
+  "math/rand"
+  "net/http"
+
+  _ "github.com/lib/pq"
+)
+
+var db *sql.DB
+
+func init() {
+  connStr := "postgresql://localhost/quotes_db?sslmode=disable"
+  var err error
+  db, err = sql.Open("postgres", connStr)
+  if err != nil {
+    log.Fatal("Failed to connect to database:", err)
+  }
+
+  err = db.Ping()
+  if err != nil {
+    log.Fatal("Failed to ping database:", err)
+  }
+  log.Println("Connected to the database")
+}
+```
+
+---
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 32px;
+}
+.language-go {
+  font-size:65%;
+}
+</style>
+
+#### An Example With Go
+
+- Testing the connection:
+
+```diff
+$ go run main.go
++ 2023/07/01 00:20:51 Connected to the database
+  2023/07/01 00:20:51 Listening on port 8080
+```
+
+- Awesome, we are connected to the DB. Now we can query the table with quotes!
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 32px;
+}
+.language-go {
+  font-size:65%;
+}
+</style>
+
+#### An Example With Go
+
+- First, we have to define what the query will be. We can either:
+
+  1. Get a list of quotes and randomize the response in the Go server
+  2. Get a single random quote from the database
+
+- With option 1 we have a problem: there is a limit on how many quotes we can fetch at once, and it would be really slow and inefficient to ingest several quotes to return just one.
+- In option 2 we would have a problem if there was no way to get a random quote from the DB. But as you might have noticed, SQL databases are very flexible and feature-rich. Getting random values is quite easy :tada:
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 32px;
+}
+.language-sql {
+  font-size:150%;
+}
+</style>
+
+#### An Example With Go
+
+- The query will look like this:
+
+```sql
+SELECT quote FROM quotes ORDER BY RANDOM() LIMIT 1;
+```
+
+- The `ORDER BY RANDOM()` makes the result random and the `LIMIT 1` clause returns only one result.
+
+- Now we just have to update the Go code and assign this result to one variable to return it in the response...
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 28px;
+}
+.language-go {
+  font-size:90%;
+}
+</style>
+
+##### An Example With Go
+
+- Add the `getRandomQuote` function to return the result:
+
+```go
+func getRandomQuote() (string, error) {
+  rows, err := db.Query("SELECT quote FROM quotes ORDER BY RANDOM() LIMIT 1")
+  if err != nil {
+    return "", err
+  }
+  defer rows.Close()
+
+  var quote string
+  for rows.Next() {
+    err := rows.Scan(&quote)
+    if err != nil {
+      return "", err
+    }
+  }
+
+  return quote, nil
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+##### An Example With Go
+
+- Update the `quoteHandler` function:
+
+```go
+func quoteHandler(w http.ResponseWriter, r *http.Request) {
+  quote, err := getRandomQuote()
+  if err != nil {
+    log.Println("Failed to retrieve quote:", err)
+    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    return
+  }
+
+  w.Header().Set("Content-Type", "text/plain")
+  w.Write([]byte(quote))
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+##### An Example With Go
+
+- Testing the server again:
+
+```
+go run main.go 
+2023/07/01 01:28:18 Connected to the database
+2023/07/01 01:28:18 Listening on port 8080
+```
+```
+$ curl http://localhost:8080/quote
+Nothing is impossible
+$ curl http://localhost:8080/quote
+We need much less than we think we need
+```
+:tada: :tada: :tada:
+
+---
+
+### An Example With Go
+
+- So far we have:
+  - A Go HTTP server with a single route: `/quote` that returns a random quote.
+  - A PostgreSQL server that stores the quotes in a database called `quotes_db`
+  - The Go server fetches the quotes from the DB and returns to the client.
+
+**What about the ORM?**
+
+---
+
+### An Example With Go
+
+- Using an ORM is not mandatory. We could improve the example even more and use all the features of SQL using only the current stack.
+
+- But... we can also use an ORM as an abstraction layer between the language we are using in the server (in this example, Go) and SQL.
+
+- That way, we can remove (or at least reduce a lot) the usage of "raw" SQL.
+
+---
+
+<style scoped>
+li {
+  font-size: 32px;
+}
+</style>
+
+### PROS and CONS
+
+<div class="columns">
+<div class="border-right-black">
+<h5>Pros</h5>
+
+- Models are DRY
+- SQL injection is harder
+- Simpler queries
+- Migrations
+
+</div>
+<div>
+<h5>Cons</h5>
+
+- Complex queries
+- Additional tech
+- Obfuscates underlying SQL behaviour
+
+</div>
+</div>
+
+---
+
+### An Example With Go
+
+- Let's see how we would build the same quotes Go server using an ORM.
+
+- For this example we will be using [GORM](https://gorm.io/)
+
 ---
 
 <!-- _class: invert -->
 
 ### An Example With Go
 
-- Next, let's update the code to create the DB connection:
+- Once again, we start with a simple HTTP server with the `/quote` endpoint:
 
-```diff
-import (
-	"log"
-	"math/rand"
-	"net/http"
-)
-
+```go
 
 ```
+
 ---
 
 

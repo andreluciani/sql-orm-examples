@@ -1,7 +1,10 @@
 image: gitpod/workspace-postgres
 tasks:
   - name: Build & Serve Slides
-    command: npm install && npm start
+    command: |
+      ./setup.sh
+      unset PGHOSTADDR
+      npm install && npm start
 ports:
   - port: 5432
     onOpen: ignore
