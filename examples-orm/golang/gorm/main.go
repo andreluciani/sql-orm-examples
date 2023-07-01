@@ -16,13 +16,12 @@ type Quotes struct {
 }
 
 func getRandomQuote() (string, error) {
-	var quote string
-	err := db.Select("quote").First(&quote).Error
+	var quote Quotes
+	err := db.Order("RANDOM()").Limit(1).Find(&quote).Error
 	if err != nil {
 		return "", err
 	}
-
-	return quote, nil
+	return quote.Quote, nil
 }
 
 func quoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +37,7 @@ func quoteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	dsn := "host=localhost port=5432 sslmode=disable"
+	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
 	var err error
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
