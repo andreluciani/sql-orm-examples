@@ -5,16 +5,14 @@ import (
 	"net/http"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	response := "Hello, World!"
-
+func quoteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(response))
+	w.Write([]byte("Nothing is impossible.\n"))
 }
 
 func main() {
-	http.HandleFunc("/hello", helloHandler)
+	http.HandleFunc("/quote", quoteHandler)
 
-	log.Println("Server started on http://localhost:8000")
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	log.Println("Listening on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

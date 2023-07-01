@@ -2390,7 +2390,7 @@ quotes_db=# SELECT * FROM quotes;
 - To connect to the DB we are going to use the `database/sql` native Go package and also a PostgreSQL [driver](https://github.com/golang/go/wiki/SQLDrivers). In this example, [`lib/pq`](https://github.com/lib/pq).
 
 ```
-go mod init go-orm-example
+go mod init go-sql-example
 go get -u github.com/lib/pq
 ```
 
@@ -2439,6 +2439,7 @@ func init() {
 ```
 
 ---
+
 <!-- _class: invert -->
 <style scoped>
 li {
@@ -2574,16 +2575,18 @@ func quoteHandler(w http.ResponseWriter, r *http.Request) {
 - Testing the server again:
 
 ```
-go run main.go 
+go run main.go
 2023/07/01 01:28:18 Connected to the database
 2023/07/01 01:28:18 Listening on port 8080
 ```
+
 ```
 $ curl http://localhost:8080/quote
 Nothing is impossible
 $ curl http://localhost:8080/quote
 We need much less than we think we need
 ```
+
 :tada: :tada: :tada:
 
 ---
@@ -2648,17 +2651,192 @@ li {
 ---
 
 <!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 32px;
+}
+.language-go {
+  font-size: 70%;
+}
+</style>
 
 ### An Example With Go
 
 - Once again, we start with a simple HTTP server with the `/quote` endpoint:
 
 ```go
+package main
 
+import (
+  "log"
+  "net/http"
+)
+
+func quoteHandler(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "text/plain")
+  w.Write([]byte("Nothing is impossible.\n"))
+}
+
+func main() {
+  http.HandleFunc("/quote", quoteHandler)
+
+  log.Println("Listening on port 8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
+}
 ```
 
 ---
 
+<!-- _class: invert -->
+<style scoped>
+li {
+  font-size: 28px;
+}
+
+code {
+  font-size: 150%;
+}
+</style>
+
+### An Example With Go
+
+- To connect to the DB we are going to use the `GORM` library with its PostgreSQL driver, [`gorm.io/driver/postgres`](https://github.com/go-gorm/postgres).
+
+```
+go mod init go-orm-example
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/postgres
+```
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- In the example with Go and vanilla SQL we created the database `quotes_db` and added some data using `psql`.
+
+- Here we are going to use `GORM` to do this step as well, so we can see how the DDL is translated to the ORM.
+
+---
+
+<!-- _class: invert -->
+
+```go
+// package, import ...
+type Quotes struct {
+	ID    uint `gorm:"primaryKey"`
+	Quote string
+}
+
+var (
+	initialQuotes = []Quotes{
+		{Quote: "Nothing is impossible"},
+		{Quote: "If you`re going through hell, keep going"},
+		{Quote: "We need much less than we think we need"},
+		{Quote: "If things go wrong, don`t go with them"},
+		{Quote: "Whatever you are, be a good one"},
+	}
+)
+
+func main() {
+	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	db.AutoMigrate(&Quotes{})
+
+	for _, quote := range initialQuotes {
+		db.Create(&quote)
+	}
+}
+```
+
+<!-- Here's what the seed file looks like. -->
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  img {
+    padding: 0;
+    margin: 0;
+  }
+  .bottom-space {
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+</style>
+
+<div class="columns">
+<div>
+
+<img src="https://icongr.am/simple/go.svg?size=100&color=ffffff&colored=false" />
+
+```go
+// package, import ...
+type Quotes struct {
+	ID    uint `gorm:"primaryKey"`
+	Quote string
+}
+
+var (
+	initialQuotes = []Quotes{
+		{Quote: "Nothing is impossible"},
+		{Quote: "If you`re going through hell, keep going"},
+		{Quote: "We need much less than we think we need"},
+		{Quote: "If things go wrong, don`t go with them"},
+		{Quote: "Whatever you are, be a good one"},
+	}
+)
+
+func main() {
+	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	db.AutoMigrate(&Quotes{})
+
+	for _, quote := range initialQuotes {
+		db.Create(&quote)
+	}
+}
+```
+
+</div>
+<div>
+
+<div class="bottom-space">
+SQL
+</div>
+
+```sql
+CREATE TABLE quotes (id serial PRIMARY KEY, quote varchar NOT NULL);
+INSERT INTO quotes(quote)
+VALUES ('Nothing is impossible'),
+    ('If you`re going through hell, keep going'),
+    ('We need much less than we think we need'),
+    ('If things go wrong, don`t go with them'),
+    ('Whatever you are, be a good one');
+```
+
+</div>
+</div>
+
+<!-- Comparing to raw SQL (not including the creation of the database). As you can see, using Go, the code is more verbose. -->
+<!-- At the same time, though, theres's nothing SQL in the code, it is "pure" Go. It uses structs, methods and Go types. -->
+
+---
+
+### An Example With Go
+
+Now, let's update the server to query the database using `GORM`!
+
+---
 
 <!-- _class: invert -->
 

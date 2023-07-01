@@ -1,4 +1,4 @@
-module go-orm-example
+module go-sql-example
 
 go 1.19
 

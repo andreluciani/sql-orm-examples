@@ -1,0 +1,6 @@
+go 1.19
+
+use (
+	./examples-orm/golang/gorm
+	./examples-orm/golang/raw-sql
+)
