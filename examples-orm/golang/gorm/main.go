@@ -17,7 +17,7 @@ type Quotes struct {
 
 func getRandomQuote() (string, error) {
 	var quote Quotes
-	err := db.Order("RANDOM()").Limit(1).Find(&quote).Error
+	err := db.Order("RANDOM()").Take(&quote).Error
 	if err != nil {
 		return "", err
 	}

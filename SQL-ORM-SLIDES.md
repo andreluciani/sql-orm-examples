@@ -2839,6 +2839,158 @@ Now, let's update the server to query the database using `GORM`!
 ---
 
 <!-- _class: invert -->
+<style scoped>
+  li {
+    font-size: 28px;
+  }
+</style>
+
+### An Example With Go
+
+- First, we will declare a global variable `db` that holds the database connection, and declare the model used in this example:
+
+```go
+var db *gorm.DB
+
+type Quotes struct {
+	ID    uint `gorm:"primaryKey"`
+	Quote string
+}
+```
+
+- In order to make the code more DRY we could have used a different file to declare the model and use it both for the seed script and the server itself
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  .language-go {
+    font-size: 150%;
+  }
+</style>
+
+### An Example With Go
+
+- Then we create a function to execute the database query:
+
+```go
+func getRandomQuote() (string, error) {
+	var quote Quotes
+	err := db.Order("RANDOM()").Take(&quote).Error
+	if err != nil {
+		return "", err
+	}
+	return quote.Quote, nil
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+### An Example With Go
+
+- In the previous slide we have used the `db` variable (which has the `gorm.DB` type) to make the query.
+
+- Two methods were called: `Order()` and `Take()`. The first one is directly related to the SQL statement `ORDER BY`.
+
+- In the [`GORM` docs](https://gorm.io/docs/) we can find how to create models, associations, queries, and so on.
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  li {
+    font-size: 28px;
+  }
+</style>
+
+### An Example With Go
+
+- Here are a few "equivalent" functions:
+
+|    **GORM**    |   **SQL**    |
+| :------------: | :----------: |
+|   `Create()`   |   `INSERT`   |
+|   `Where()`    |   `WHERE`    |
+|   `Select()`   |   `SELECT`   |
+|   `Order()`    |  `ORDER BY`  |
+|   `Joins()`    | `LEFT JOIN`  |
+| `InnerJoins()` | `INNER JOIN` |
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  li {
+    font-size: 28px;
+  }
+</style>
+
+### An Example With Go
+
+- This does **not** mean that the ORM queries will look exactly like the SQL queries. Some SQL keywords are added to the query "behind the scenes". Here's another `GORM` example:
+
+`db.First(&user)` is equivalent to
+
+`SELECT * FROM users ORDER BY id LIMIT 1;`
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  li {
+    font-size: 28px;
+  }
+</style>
+
+### An Example With Go
+
+- Actually, `GORM` provides a method to get the resulting SQL query:
+
+```go
+sql := db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+  return tx.Order("RANDOM()").Take(&quote)
+})
+log.Println(sql)
+```
+
+Returns:
+
+`SELECT * FROM "quotes" ORDER BY RANDOM() LIMIT 1`
+
+- Quite similar to the query used in the Go + SQL example!
+
+---
+
+# Additional ORM Concepts
+
+- **Lazy Loading vs. Eager Loading**
+- **Caching and Performance Optimization**
+- **Object-Relational impedance mismatch**
+
+---
+
+<!-- _class: invert -->
+
+# Lazy Loading vs. Eager Loading
+
+---
+
+<!-- _class: invert -->
+
+# Caching and Performance Optimization
+
+---
+
+<!-- _class: invert -->
+
+# Object-Relational impedance mismatch
+
+---
+
+
+<!-- _class: invert -->
 
 # Agenda
 

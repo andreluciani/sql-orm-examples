@@ -55,30 +55,23 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 ## **Part 2: Object-Relational Mappers (ORMs)**
 
 1. Introduction to ORMs:
-   - [ ]  Definition of ORMs and their purpose.
-   - [ ]  Benefits and drawbacks of using ORMs.
+   - [x]  Definition of ORMs and their purpose.
+   - [x]  Benefits and drawbacks of using ORMs.
+   - [x]  Mapping classes/objects to database tables.
 
-2. Popular ORMs:
-   - [ ]  Overview of popular ORMs (e.g., Hibernate, SQLAlchemy, Sequelize).
-   - [ ]  Language-specific ORMs (e.g., Django ORM, ActiveRecord).
-
-3. Mapping Objects to Tables:
-   - [ ]  Object-Relational impedance mismatch.
-   - [ ]  Mapping classes/objects to database tables.
-
-4. CRUD Operations with ORMs:
-   - [ ]  Creating objects and inserting data.
-   - [ ]  Retrieving objects using queries.
+2. CRUD Operations with ORMs:
+   - [x]  Creating objects and inserting data.
+   - [x]  Retrieving objects using queries.
    - [ ]  Updating and deleting objects.
 
-5. Relationships and Associations:
+3. Relationships and Associations:
    - [ ]  Defining relationships between objects (e.g., one-to-one, one-to-many, many-to-many).
    - [ ]  Handling associations using ORMs.
 
-6. Advanced ORM Concepts:
+4. Additional ORM Concepts:
    - [ ]  Lazy loading vs. eager loading.
    - [ ]  Caching and performance optimization.
-   - [ ]  ORM-specific features and configurations.
+   - [ ]  Object-Relational impedance mismatch
 
 ## **Part 3: Best Practices and Tips**
 
