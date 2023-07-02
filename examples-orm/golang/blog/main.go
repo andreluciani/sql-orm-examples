@@ -1,33 +1,18 @@
 package main
 
 import (
-	"encoding/json"
+	"go-book-server/handler"
 	"log"
 	"net/http"
 )
 
-type Message struct {
-	Text string `json:"text"`
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	message := Message{
-		Text: "Hello, World!",
-	}
-
-	response, err := json.Marshal(message)
-	if err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(response)
-}
-
 func main() {
-	http.HandleFunc("/hello", helloHandler)
+	http.HandleFunc("/authors", handler.Authors)
+	http.HandleFunc("/authors/", handler.AuthorsByID)
 
-	log.Println("Server started on http://localhost:8000")
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	http.HandleFunc("/books", handler.Books)
+	http.HandleFunc("/books/", handler.BooksByID)
+
+	log.Println("Server started on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

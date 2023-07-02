@@ -2963,6 +2963,14 @@ Returns:
 
 ---
 
+### CRUD with `GORM`
+
+- Now, let's take another step and implement a GO API with `GORM` to do CRUD operations. Here's the schema to be implemented:
+
+![h:300](./assets/books-schema.png)
+
+---
+
 # Additional ORM Concepts
 
 - **Lazy Loading vs. Eager Loading**
@@ -2988,7 +2996,6 @@ Returns:
 # Object-Relational impedance mismatch
 
 ---
-
 
 <!-- _class: invert -->
 
@@ -3025,3 +3032,11 @@ section li em {
 - ...
 
  <!-- Presenter notes. -->
+
+---
+
+## SQL Injection
+
+Take a look at this [xkcd](https://imgs.xkcd.com/comics/exploits_of_a_mom.png) comic:
+
+![h:350](./assets/exploits_of_a_mom.png)
