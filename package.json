@@ -4,8 +4,8 @@
   "description": "Simple repository to illustrate SQL and ORM concepts",
   "scripts": {
     "build": "rimraf public && npm run -s og-image && npm run -s deck",
-    "deck": "marp --no-stdin --html SQL-ORM-SLIDES.md -o public/index.html && ncp assets public/assets",
-    "og-image": "marp --no-stdin SQL-ORM-SLIDES.md -o public/og-image.jpg",
+    "deck": "./compile.sh && marp --no-stdin --html index.md -o public/index.html && ncp assets public/assets",
+    "og-image": "marp --no-stdin index.md -o public/og-image.jpg",
     "serve": "npx parcel public/index.html",
     "start": "npm run -s build && npx parcel public/index.html"
   },
