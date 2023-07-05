@@ -4,14 +4,25 @@ import (
 	"go-book-server/handler"
 	"log"
 	"net/http"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func main() {
-	http.HandleFunc("/authors", handler.Authors)
-	http.HandleFunc("/authors/", handler.AuthorsByID)
+var db *gorm.DB
 
-	http.HandleFunc("/books", handler.Books)
-	http.HandleFunc("/books/", handler.BooksByID)
+func main() {
+	dsn := "host=localhost dbname=books_db port=5432 sslmode=disable"
+	var err error
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect to database")
+	}
+
+	controller := handler.NewController(db)
+
+	http.HandleFunc("/authors", controller.Authors())
+	http.HandleFunc("/authors/", controller.AuthorsByID())
 
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

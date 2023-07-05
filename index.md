@@ -2969,7 +2969,184 @@ Returns:
 
 ![h:300](/assets/books-schema.png)
 
+---
 
+<!-- _class: invert -->
+
+### CRUD with `GORM`
+
+- It is a really simple schema to store books and authors with a single `one-to-many` relation (one author can have several books associated with them)
+
+- The first step is to create the models using `GORM`
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+- `models/authors.go`
+
+```go
+package model
+
+import (
+  "gorm.io/gorm"
+)
+
+type Author struct {
+  gorm.Model
+  FirstName string
+  LastName  string
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+- `models/books.go`
+
+```go
+package model
+
+import (
+  "gorm.io/gorm"
+)
+
+type Book struct {
+  gorm.Model
+  Title             string
+  Description       string
+  YearOfPublication int
+  AuthorID          uint
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
+
+
+- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
+
+---
+
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding will make simpler to explain the next steps.
+
+---
+
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+package main
+
+import (
+  "log"
+
+  "go-book-server/model"
+
+  "gorm.io/driver/postgres"
+  "gorm.io/gorm"
+)
+
+var (
+  initialAuthors = []model.Author{
+    {FirstName: "William", LastName: "Shakespeare"},
+    {FirstName: "Harper", LastName: "Lee"},
+  }
+
+  initialBooks = []model.Book{
+    {
+      Title:             "Macbeth",
+      Description:       "A Scottish general's ruthless quest for power...",
+      YearOfPublication: 1600,
+      AuthorID:          1,
+    },
+    {
+      Title:             "Romeo and Juliet",
+      Description:       " The forbidden love between two young individuals...",
+      YearOfPublication: 1595,
+      AuthorID:          1,
+    },
+    {
+      Title:             "To Kill a Mockingbird",
+      Description:       "Set in the racially-charged 1930s Deep South...",
+      YearOfPublication: 1860,
+      AuthorID:          2,
+    },
+  }
+)
+```
+
+---
+
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+func main() {
+	dsn := "host=localhost port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	// Checking if DB exists
+	rs := db.Raw("SELECT * FROM pg_database WHERE datname = 'books_db';")
+	if rs.Error != nil {
+		log.Fatal("Raw query failed:", err)
+	}
+
+	// If not, create it
+	var rec = make(map[string]interface{})
+	if rs.Find(rec); len(rec) == 0 {
+		if rs := db.Exec("CREATE DATABASE books_db;"); rs.Error != nil {
+			log.Fatal("Couldn't create database: ", err)
+		}
+
+		// Close db connection
+		sql, err := db.DB()
+		defer func() {
+			_ = sql.Close()
+		}()
+		if err != nil {
+			log.Fatal("An error occurred: ", err)
+		}
+	}
+
+	// Reconnect and add initial data
+	dsn = "host=localhost dbname=books_db port=5432 sslmode=disable"
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	db.AutoMigrate(&model.Author{}, &model.Book{})
+
+	for _, author := range initialAuthors {
+		db.Create(&author)
+	}
+	for _, book := range initialBooks {
+		db.Create(&book)
+	}
+
+	log.Println("Successfully added seed data!")
+}
+```
 ---
 
 # Additional ORM Concepts

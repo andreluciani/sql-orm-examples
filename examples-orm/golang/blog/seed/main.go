@@ -11,11 +11,29 @@ import (
 
 var (
 	initialAuthors = []model.Author{
-		{FirstName: "John", LastName: "Doe"},
+		{FirstName: "William", LastName: "Shakespeare"},
+		{FirstName: "Harper", LastName: "Lee"},
 	}
 
 	initialBooks = []model.Book{
-		{Title: "John", Description: "Doe", YearOfPublication: 123, AuthorID: 1},
+		{
+			Title:             "Macbeth",
+			Description:       "A Scottish general's ruthless quest for power leads to his descent into madness and bloodshed, exposing the tragic consequences of unchecked ambition.",
+			YearOfPublication: 1600,
+			AuthorID:          1,
+		},
+		{
+			Title:             "Romeo and Juliet",
+			Description:       " The forbidden love between two young individuals from warring families in Verona ends in tragedy, exploring themes of love, fate, and the destructive power of hatred.",
+			YearOfPublication: 1595,
+			AuthorID:          1,
+		},
+		{
+			Title:             "To Kill a Mockingbird",
+			Description:       "Set in the racially-charged 1930s Deep South, a young girl's perspective reveals the profound impact of racial injustice and the pursuit of justice through her father's defense of an innocent black man.",
+			YearOfPublication: 1860,
+			AuthorID:          2,
+		},
 	}
 )
 

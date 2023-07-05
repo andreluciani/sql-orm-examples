@@ -30,6 +30,7 @@ math: mathjax
 <!-- _class: invert -->
 
 #### CRUD with `GORM`
+
 - `models/authors.go`
 
 ```go
@@ -51,6 +52,7 @@ type Author struct {
 <!-- _class: invert -->
 
 #### CRUD with `GORM`
+
 - `models/books.go`
 
 ```go
@@ -66,5 +68,548 @@ type Book struct {
   Description       string
   YearOfPublication int
   AuthorID          uint
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
+
+- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding will make simpler to explain the next steps.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+package main
+
+import (
+  "log"
+
+  "go-book-server/model"
+
+  "gorm.io/driver/postgres"
+  "gorm.io/gorm"
+)
+
+var (
+  initialAuthors = []model.Author{
+    {FirstName: "William", LastName: "Shakespeare"},
+    {FirstName: "Harper", LastName: "Lee"},
+  }
+
+  initialBooks = []model.Book{
+    {
+      Title:             "Macbeth",
+      Description:       "A Scottish general's ruthless quest for power...",
+      YearOfPublication: 1600,
+      AuthorID:          1,
+    },
+    {
+      Title:             "Romeo and Juliet",
+      Description:       " The forbidden love between two young individuals...",
+      YearOfPublication: 1595,
+      AuthorID:          1,
+    },
+    {
+      Title:             "To Kill a Mockingbird",
+      Description:       "Set in the racially-charged 1930s Deep South...",
+      YearOfPublication: 1860,
+      AuthorID:          2,
+    },
+  }
+)
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+func main() {
+	dsn := "host=localhost port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	// Checking if DB exists
+	rs := db.Raw("SELECT * FROM pg_database WHERE datname = 'books_db';")
+	if rs.Error != nil {
+		log.Fatal("Raw query failed:", err)
+	}
+
+	// If not, create it
+	var rec = make(map[string]interface{})
+	if rs.Find(rec); len(rec) == 0 {
+		if rs := db.Exec("CREATE DATABASE books_db;"); rs.Error != nil {
+			log.Fatal("Couldn't create database: ", err)
+		}
+
+		// Close db connection
+		sql, err := db.DB()
+		defer func() {
+			_ = sql.Close()
+		}()
+		if err != nil {
+			log.Fatal("An error occurred: ", err)
+		}
+	}
+
+	// Reconnect and add initial data
+	dsn = "host=localhost dbname=books_db port=5432 sslmode=disable"
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+
+	db.AutoMigrate(&model.Author{}, &model.Book{})
+
+	for _, author := range initialAuthors {
+		db.Create(&author)
+	}
+	for _, book := range initialBooks {
+		db.Create(&book)
+	}
+
+	log.Println("Successfully added seed data!")
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- Awesome! Now we have a database called `bookd_db` with a few entries to work with.
+
+```
+$ go run seed/main.go
+2023/07/05 01:05:05 Successfully added seed data!
+$ psql books_db
+books_db=# SELECT * FROM authors;
+ id |          created_at           |          updated_at           | deleted_at | first_name |  last_name
+----+-------------------------------+-------------------------------+------------+------------+-------------
+  1 | 2023-07-05 01:05:05.803875+00 | 2023-07-05 01:05:05.803875+00 |            | William    | Shakespeare
+  2 | 2023-07-05 01:05:05.805375+00 | 2023-07-05 01:05:05.805375+00 |            | Harper     | Lee
+(2 rows)
+books_db=# SELECT id,title FROM books;
+ id |         title
+----+-----------------------
+  1 | Macbeth
+  2 | Romeo and Juliet
+  3 | To Kill a Mockingbird
+(3 rows)
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- Next step: implement CRUD operations.
+  - *C*reate
+  - *R*etrieve
+  - *U*pdate
+  - *D*elete
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- We'll start with the _Retrieve_ operation, implementing the `/authors` and `/books` `GET` endpoints:
+
+| **HTTP Method** |  **Endpoint**   |      **Description**      |
+| :-------------: | :-------------: | :-----------------------: |
+|       GET       |   `/authors`    | Returns a list of authors |
+|       GET       | `/authors/<id>` | Returns a specific author |
+|       GET       |    `/books`     |  Returns a list of books  |
+|       GET       |  `/books/<id>`  |  Returns a specific book  |
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The code will be structered as follows:
+
+```
+.
+└── books/
+    ├── handler/
+    │   ├── authors.go
+    │   ├── books.go
+    │   └── handler.go
+    ├── model/
+    │   ├── authors.go
+    │   └── books.go
+    ├── seed/
+    │   └── main.go
+    ├── go.mod
+    ├── go.sum
+    └── main.go
+```
+
+- The `model` and `seed` folders are done already
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```go
+package main
+
+import (
+	"go-book-server/handler"
+	"log"
+	"net/http"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+var db *gorm.DB
+
+func main() {
+	dsn := "host=localhost dbname=books_db port=5432 sslmode=disable"
+	var err error
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect to database")
+	}
+
+	controller := handler.NewController(db)
+
+	http.HandleFunc("/authors", controller.Authors())
+	http.HandleFunc("/authors/", controller.AuthorsByID())
+
+	log.Println("Server started on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+`handler/handler.go`
+
+```go
+package handler
+
+import "gorm.io/gorm"
+
+func NewController(db *gorm.DB) *Controller {
+	return &Controller{
+		db: *db,
+	}
+}
+
+type Controller struct {
+	db gorm.DB
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+`handler/authors.go`
+
+```go
+package handler
+
+import (
+	"encoding/json"
+	"go-book-server/model"
+	"log"
+	"net/http"
+)
+
+func (c *Controller) Authors() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			c.ListAuthors(w, r)
+		} else {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			w.Write([]byte("Method not allowed"))
+		}
+	})
+}
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+`handler/authors.go`
+
+```go
+// ...
+func (c *Controller) AuthorsByID() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			c.GetAuthorByID(w, r)
+		} else {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			w.Write([]byte("Method not allowed"))
+		}
+	})
+}
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+`handler/authors.go`
+
+```go
+// ...
+func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
+	var authors []model.Author
+	err := c.db.Find(&authors).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	result, err := json.Marshal(authors)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
+}
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+`handler/authors.go`
+
+```go
+// ...
+func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/authors/"):]
+	var author model.Author
+	err := c.db.First(&author, id).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	result, err := json.Marshal(author)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- Now let's spin up the server and do some testing!
+
+```bash
+$ go run main.go 
+2023/07/05 02:46:57 Server started on http://localhost:8080
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- `/authors` endpoint:
+
+```bash
+$ curl http://localhost:8080/authors | jq
+[
+  {
+    "ID": 1,
+    "CreatedAt": "2023-07-05T01:05:05.803875Z",
+    "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+    "DeletedAt": null,
+    "FirstName": "William",
+    "LastName": "Shakespeare"
+  },
+  {
+    "ID": 2,
+    "CreatedAt": "2023-07-05T01:05:05.805375Z",
+    "UpdatedAt": "2023-07-05T01:05:05.805375Z",
+    "DeletedAt": null,
+    "FirstName": "Harper",
+    "LastName": "Lee"
+  }
+]
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- `/authors/<id>` endpoint:
+
+```bash
+$ curl http://localhost:8080/authors/1 | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-05T01:05:05.803875Z",
+  "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+  "DeletedAt": null,
+  "FirstName": "William",
+  "LastName": "Shakespeare"
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- `/authors/<id>` endpoint (wrong id):
+
+```bash
+$ curl http://localhost:8080/authors/123
+curl: (52) Empty reply from server
+```
+- Meanwhile, on the server:
+```bash
+2023/07/05 02:51:45 /book/handler/authors.go:53 record not found
+[3.437ms] [rows:0] SELECT * FROM "authors" WHERE "authors"."id" = '123'
+                   AND "authors"."deleted_at" IS NULL
+                   ORDER BY "authors"."id" LIMIT 1
+2023/07/05 02:51:45 record not found
+exit status 1
+```
+
+- We can fix this!
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+`handler/authors.go`
+
+```diff
+var author model.Author
+err := c.db.First(&author, id).Error
+if err != nil {
++  if errors.Is(err, gorm.ErrRecordNotFound) {
++    w.WriteHeader(http.StatusNotFound)
++    w.Write([]byte("author not found."))
++    return
++  }
+  w.WriteHeader(http.StatusInternalServerError)
+  log.Fatal(err)
+  return
 }
 ```
