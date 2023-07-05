@@ -24,6 +24,9 @@ func main() {
 	http.HandleFunc("/authors", controller.Authors())
 	http.HandleFunc("/authors/", controller.AuthorsByID())
 
+	http.HandleFunc("/books", controller.Books())
+	http.HandleFunc("/books/", controller.BooksByID())
+
 	log.Println("Server started on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -10,4 +10,5 @@ type Book struct {
 	Description       string
 	YearOfPublication int
 	AuthorID          uint
+	Author            Author
 }

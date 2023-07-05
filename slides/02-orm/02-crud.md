@@ -68,6 +68,7 @@ type Book struct {
   Description       string
   YearOfPublication int
   AuthorID          uint
+  Author            Author
 }
 ```
 
@@ -144,51 +145,51 @@ var (
 
 ```go
 func main() {
-	dsn := "host=localhost port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-	// Checking if DB exists
-	rs := db.Raw("SELECT * FROM pg_database WHERE datname = 'books_db';")
-	if rs.Error != nil {
-		log.Fatal("Raw query failed:", err)
-	}
+  dsn := "host=localhost port=5432 sslmode=disable"
+  db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
+  // Checking if DB exists
+  rs := db.Raw("SELECT * FROM pg_database WHERE datname = 'books_db';")
+  if rs.Error != nil {
+    log.Fatal("Raw query failed:", err)
+  }
 
-	// If not, create it
-	var rec = make(map[string]interface{})
-	if rs.Find(rec); len(rec) == 0 {
-		if rs := db.Exec("CREATE DATABASE books_db;"); rs.Error != nil {
-			log.Fatal("Couldn't create database: ", err)
-		}
+  // If not, create it
+  var rec = make(map[string]interface{})
+  if rs.Find(rec); len(rec) == 0 {
+    if rs := db.Exec("CREATE DATABASE books_db;"); rs.Error != nil {
+      log.Fatal("Couldn't create database: ", err)
+    }
 
-		// Close db connection
-		sql, err := db.DB()
-		defer func() {
-			_ = sql.Close()
-		}()
-		if err != nil {
-			log.Fatal("An error occurred: ", err)
-		}
-	}
+    // Close db connection
+    sql, err := db.DB()
+    defer func() {
+      _ = sql.Close()
+    }()
+    if err != nil {
+      log.Fatal("An error occurred: ", err)
+    }
+  }
 
-	// Reconnect and add initial data
-	dsn = "host=localhost dbname=books_db port=5432 sslmode=disable"
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+  // Reconnect and add initial data
+  dsn = "host=localhost dbname=books_db port=5432 sslmode=disable"
+  db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
 
-	db.AutoMigrate(&model.Author{}, &model.Book{})
+  db.AutoMigrate(&model.Author{}, &model.Book{})
 
-	for _, author := range initialAuthors {
-		db.Create(&author)
-	}
-	for _, book := range initialBooks {
-		db.Create(&book)
-	}
+  for _, author := range initialAuthors {
+    db.Create(&author)
+  }
+  for _, book := range initialBooks {
+    db.Create(&book)
+  }
 
-	log.Println("Successfully added seed data!")
+  log.Println("Successfully added seed data!")
 }
 ```
 
@@ -298,31 +299,31 @@ li,code,td,th {
 package main
 
 import (
-	"go-book-server/handler"
-	"log"
-	"net/http"
+  "go-book-server/handler"
+  "log"
+  "net/http"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+  "gorm.io/driver/postgres"
+  "gorm.io/gorm"
 )
 
 var db *gorm.DB
 
 func main() {
-	dsn := "host=localhost dbname=books_db port=5432 sslmode=disable"
-	var err error
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect to database")
-	}
+  dsn := "host=localhost dbname=books_db port=5432 sslmode=disable"
+  var err error
+  db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect to database")
+  }
 
-	controller := handler.NewController(db)
+  controller := handler.NewController(db)
 
-	http.HandleFunc("/authors", controller.Authors())
-	http.HandleFunc("/authors/", controller.AuthorsByID())
+  http.HandleFunc("/authors", controller.Authors())
+  http.HandleFunc("/authors/", controller.AuthorsByID())
 
-	log.Println("Server started on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+  log.Println("Server started on http://localhost:8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
 
@@ -340,13 +341,13 @@ package handler
 import "gorm.io/gorm"
 
 func NewController(db *gorm.DB) *Controller {
-	return &Controller{
-		db: *db,
-	}
+  return &Controller{
+    db: *db,
+  }
 }
 
 type Controller struct {
-	db gorm.DB
+  db gorm.DB
 }
 ```
 
@@ -367,21 +368,21 @@ li,code,td,th {
 package handler
 
 import (
-	"encoding/json"
-	"go-book-server/model"
-	"log"
-	"net/http"
+  "encoding/json"
+  "go-book-server/model"
+  "log"
+  "net/http"
 )
 
 func (c *Controller) Authors() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			c.ListAuthors(w, r)
-		} else {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			w.Write([]byte("Method not allowed"))
-		}
-	})
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+      c.ListAuthors(w, r)
+    } else {
+      w.WriteHeader(http.StatusMethodNotAllowed)
+      w.Write([]byte("Method not allowed"))
+    }
+  })
 }
 // ...
 ```
@@ -402,14 +403,14 @@ li,code,td,th {
 ```go
 // ...
 func (c *Controller) AuthorsByID() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			c.GetAuthorByID(w, r)
-		} else {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			w.Write([]byte("Method not allowed"))
-		}
-	})
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+      c.GetAuthorByID(w, r)
+    } else {
+      w.WriteHeader(http.StatusMethodNotAllowed)
+      w.Write([]byte("Method not allowed"))
+    }
+  })
 }
 // ...
 ```
@@ -430,21 +431,21 @@ li,code,td,th {
 ```go
 // ...
 func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
-	var authors []model.Author
-	err := c.db.Find(&authors).Error
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
-	result, err := json.Marshal(authors)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(result)
+  var authors []model.Author
+  err := c.db.Find(&authors).Error
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  result, err := json.Marshal(authors)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusOK)
+  w.Write(result)
 }
 // ...
 ```
@@ -465,22 +466,22 @@ li,code,td,th {
 ```go
 // ...
 func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/authors/"):]
-	var author model.Author
-	err := c.db.First(&author, id).Error
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
-	result, err := json.Marshal(author)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	w.Write(result)
+  id := r.URL.Path[len("/authors/"):]
+  var author model.Author
+  err := c.db.First(&author, id).Error
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  result, err := json.Marshal(author)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusOK)
+  w.Write(result)
 }
 ```
 
@@ -611,5 +612,37 @@ if err != nil {
   w.WriteHeader(http.StatusInternalServerError)
   log.Fatal(err)
   return
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `/books` endpoint is implemented in a very similar fashion:
+
+```go
+// package, import, var ...
+
+func main() {
+  // db connection ...
+
+  controller := handler.NewController(db)
+
+  http.HandleFunc("/authors", controller.Authors())
+  http.HandleFunc("/authors/", controller.AuthorsByID())
+
+  http.HandleFunc("/books", controller.Books())
+  http.HandleFunc("/books/", controller.BooksByID())
+
+  log.Println("Server started on http://localhost:8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
