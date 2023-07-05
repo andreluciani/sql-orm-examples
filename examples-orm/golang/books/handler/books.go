@@ -27,6 +27,10 @@ func (c *Controller) BooksByID() http.HandlerFunc {
 			c.GetBookByID(w, r)
 			return
 		}
+		if r.Method == http.MethodDelete {
+			c.DeleteBook(w, r)
+			return
+		}
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("Method not allowed"))
 	})
@@ -90,8 +94,14 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Update Book by ID: " + id))
 }
 
-func DeleteBook(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/Books/"):]
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Delete Book by ID: " + id))
+func (c *Controller) DeleteBook(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/books/"):]
+	var book = model.Book{}
+	err := c.db.Where("id = ?", id).Delete(&book).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -494,7 +494,7 @@ func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
 - Now let's spin up the server and do some testing!
 
 ```bash
-$ go run main.go 
+$ go run main.go
 2023/07/05 02:46:57 Server started on http://localhost:8080
 ```
 
@@ -575,7 +575,9 @@ li,code,td,th {
 $ curl http://localhost:8080/authors/123
 curl: (52) Empty reply from server
 ```
+
 - Meanwhile, on the server:
+
 ```bash
 2023/07/05 02:51:45 /book/handler/authors.go:53 record not found
 [3.437ms] [rows:0] SELECT * FROM "authors" WHERE "authors"."id" = '123'
@@ -909,3 +911,54 @@ li,code,td,th {
 |     DELETE      |  `/books/<id>`  |  Deletes a specific book  |
 
 ---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```diff
+func (c *Controller) AuthorsByID() http.HandlerFunc {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+      c.GetAuthorByID(w, r)
+      return
+    }
++    if r.Method == http.MethodDelete {
++      c.DeleteAuthor(w, r)
++      return
++    }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
+  })
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```go
+func (c *Controller) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
+  id := r.URL.Path[len("/authors/"):]
+  var author = model.Author{}
+  err := c.db.Where("id = ?", id).Delete(&author).Error
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusNoContent)
+}
+```

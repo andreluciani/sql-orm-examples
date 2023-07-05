@@ -27,6 +27,10 @@ func (c *Controller) AuthorsByID() http.HandlerFunc {
 			c.GetAuthorByID(w, r)
 			return
 		}
+		if r.Method == http.MethodDelete {
+			c.DeleteAuthor(w, r)
+			return
+		}
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		w.Write([]byte("Method not allowed"))
 	})
@@ -90,8 +94,14 @@ func UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Update author by ID: " + id))
 }
 
-func DeleteAuthor(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/authors/"):]
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Delete author by ID: " + id))
+	var author = model.Author{}
+	err := c.db.Where("id = ?", id).Delete(&author).Error
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
