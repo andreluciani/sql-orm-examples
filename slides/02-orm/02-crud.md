@@ -378,10 +378,10 @@ func (c *Controller) Authors() http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodGet {
       c.ListAuthors(w, r)
-    } else {
-      w.WriteHeader(http.StatusMethodNotAllowed)
-      w.Write([]byte("Method not allowed"))
+      return
     }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
   })
 }
 // ...
@@ -406,10 +406,10 @@ func (c *Controller) AuthorsByID() http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodGet {
       c.GetAuthorByID(w, r)
-    } else {
-      w.WriteHeader(http.StatusMethodNotAllowed)
-      w.Write([]byte("Method not allowed"))
+      return
     }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
   })
 }
 // ...
@@ -646,3 +646,266 @@ func main() {
   log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `/books` endpoint is implemented in a very similar fashion:
+
+```go
+// package, import, var ...
+
+func main() {
+  // db connection ...
+
+  controller := handler.NewController(db)
+
+  http.HandleFunc("/authors", controller.Authors())
+  http.HandleFunc("/authors/", controller.AuthorsByID())
+
+  http.HandleFunc("/books", controller.Books())
+  http.HandleFunc("/books/", controller.BooksByID())
+
+  log.Println("Server started on http://localhost:8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+##### CRUD with `GORM`
+
+```go
+// ...
+func (c *Controller) ListBooks(w http.ResponseWriter, r *http.Request) {
+  var Books []model.Book
+  err := c.db.Preload("Author").Find(&Books).Error
+  if err != nil {
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+      w.WriteHeader(http.StatusNotFound)
+      w.Write([]byte("Book not found."))
+      return
+    }
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  result, err := json.Marshal(Books)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusOK)
+  w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+##### CRUD with `GORM`
+
+```go
+// ...
+func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
+  id := r.URL.Path[len("/Books/"):]
+  var Book model.Book
+  err := c.db.Preload("Author").First(&Book, id).Error
+  if err != nil {
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+      w.WriteHeader(http.StatusNotFound)
+      w.Write([]byte("Book not found."))
+      return
+    }
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  result, err := json.Marshal(Book)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusOK)
+  w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+##### CRUD with `GORM`
+
+- In the previous slides, an additional method was called: `.Preload("Authors")`
+
+- This is a feature from `GORM` that tells the query to return the author associated with the book.
+
+- This technique is called _eager loading_ and will be exaplained in more detail later
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+##### CRUD with `GORM`
+
+- Testing the `/books` endpoint:
+
+<div class="columns">
+<div>
+
+```bash
+$ curl http:/localhost:8080/books | jq
+[
+  {
+    "ID": 1,
+    "CreatedAt": "2023-07-05T03:15:43.252328Z",
+    "UpdatedAt": "2023-07-05T03:15:43.252328Z",
+    "DeletedAt": null,
+    "Title": "Macbeth",
+    "Description": "A Scottish general's ruthless quest ...",
+    "YearOfPublication": 1600,
+    "AuthorID": 1,
+    "Author": {
+      "ID": 1,
+      "CreatedAt": "2023-07-05T03:15:43.248912Z",
+      "UpdatedAt": "2023-07-05T03:15:43.248912Z",
+      "DeletedAt": null,
+      "FirstName": "William",
+      "LastName": "Shakespeare"
+    }
+  },
+  {
+    "ID": 2,
+    "CreatedAt": "2023-07-05T03:15:43.254232Z",
+    "UpdatedAt": "2023-07-05T03:15:43.254232Z",
+    "DeletedAt": null,
+    "Title": "Romeo and Juliet",
+    "Description": " The forbidden love between two young individuals ...",
+    "YearOfPublication": 1595,
+    "AuthorID": 1,
+    "Author": {
+      "ID": 1,
+      "CreatedAt": "2023-07-05T03:15:43.248912Z",
+      "UpdatedAt": "2023-07-05T03:15:43.248912Z",
+      "DeletedAt": null,
+      "FirstName": "William",
+      "LastName": "Shakespeare"
+    }
+  },
+  ...
+```
+
+</div>
+<div>
+
+```bash
+...
+  {
+    "ID": 3,
+    "CreatedAt": "2023-07-05T03:15:43.255502Z",
+    "UpdatedAt": "2023-07-05T03:15:43.255502Z",
+    "DeletedAt": null,
+    "Title": "To Kill a Mockingbird",
+    "Description": "Set in the racially-charged 1930s Deep South...",
+    "YearOfPublication": 1860,
+    "AuthorID": 2,
+    "Author": {
+      "ID": 2,
+      "CreatedAt": "2023-07-05T03:15:43.250817Z",
+      "UpdatedAt": "2023-07-05T03:15:43.250817Z",
+      "DeletedAt": null,
+      "FirstName": "Harper",
+      "LastName": "Lee"
+    }
+  }
+]
+```
+
+</div>
+</div>
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+##### CRUD with `GORM`
+
+- Testing the `/books/<id>` endpoint:
+
+```bash
+$ curl http:/localhost:8080/books/1 | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-05T03:15:43.252328Z",
+  "UpdatedAt": "2023-07-05T03:15:43.252328Z",
+  "DeletedAt": null,
+  "Title": "Macbeth",
+  "Description": "A Scottish general's ruthless quest...",
+  "YearOfPublication": 1600,
+  "AuthorID": 1,
+  "Author": {
+    "ID": 1,
+    "CreatedAt": "2023-07-05T03:15:43.248912Z",
+    "UpdatedAt": "2023-07-05T03:15:43.248912Z",
+    "DeletedAt": null,
+    "FirstName": "William",
+    "LastName": "Shakespeare"
+  }
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- That concludes the _Retrieve_ operation. Next: _Delete_
+  - *C*reate
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - *U*pdate
+  - *D*elete
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- For the _Delete_ operation, we will implement a [soft delete](https://gorm.io/docs/delete.html#Soft-Delete) for the endpoints the `/authors/<id>` and `/books/<id>`:
+
+| **HTTP Method** |  **Endpoint**   |      **Description**      |
+| :-------------: | :-------------: | :-----------------------: |
+|     DELETE      | `/authors/<id>` | Deletes a specific author |
+|     DELETE      |  `/books/<id>`  |  Deletes a specific book  |
+
+---

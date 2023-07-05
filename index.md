@@ -3332,10 +3332,10 @@ func (c *Controller) Authors() http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodGet {
       c.ListAuthors(w, r)
-    } else {
-      w.WriteHeader(http.StatusMethodNotAllowed)
-      w.Write([]byte("Method not allowed"))
+      return
     }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
   })
 }
 // ...
@@ -3360,10 +3360,10 @@ func (c *Controller) AuthorsByID() http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodGet {
       c.GetAuthorByID(w, r)
-    } else {
-      w.WriteHeader(http.StatusMethodNotAllowed)
-      w.Write([]byte("Method not allowed"))
+      return
     }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
   })
 }
 // ...
@@ -3566,6 +3566,38 @@ if err != nil {
   w.WriteHeader(http.StatusInternalServerError)
   log.Fatal(err)
   return
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 80%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `/books` endpoint is implemented in a very similar fashion:
+
+```go
+// package, import, var ...
+
+func main() {
+  // db connection ...
+
+  controller := handler.NewController(db)
+
+  http.HandleFunc("/authors", controller.Authors())
+  http.HandleFunc("/authors/", controller.AuthorsByID())
+
+  http.HandleFunc("/books", controller.Books())
+  http.HandleFunc("/books/", controller.BooksByID())
+
+  log.Println("Server started on http://localhost:8080")
+  log.Fatal(http.ListenAndServe(":8080", nil))
 }
 ```
 

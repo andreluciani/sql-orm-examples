@@ -4,8 +4,8 @@
   "description": "Simple repository to illustrate SQL and ORM concepts",
   "scripts": {
     "install-deps": "./setup.sh",
-    "build": "rimraf public && npm run -s og-image && npm run -s deck",
-    "deck": "./compile.sh && marp --no-stdin --html index.md -o public/index.html && ncp assets public/assets",
+    "build": "rm -rf public && ./compile.sh  && npm run -s og-image && npm run -s deck",
+    "deck": "marp --no-stdin --html index.md -o public/index.html && ncp assets public/assets",
     "og-image": "marp --no-stdin index.md -o public/og-image.jpg",
     "serve": "npx parcel public/index.html",
     "start": "npm run -s build && npx parcel public/index.html"
@@ -15,7 +15,6 @@
   "devDependencies": {
     "@marp-team/marp-cli": "^3.0.2",
     "ncp": "^2.0.0",
-    "parcel": "^2.9.3",
-    "rimraf": "^5.0.1"
+    "parcel": "^2.9.3"
   }
 }
