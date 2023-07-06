@@ -44,6 +44,7 @@ type Author struct {
   gorm.Model
   FirstName string
   LastName  string
+  Books     []Book
 }
 ```
 
@@ -69,6 +70,41 @@ type Book struct {
   YearOfPublication int
   AuthorID          uint
   Author            Author
+}
+```
+
+---
+
+#### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
+
+- Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
+
+```javascript
+model Authors {
+    id        Int       @id @default(autoincrement())
+    firstName String?
+    lastName  String?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    books     Books[]
+}
+```
+
+---
+
+#### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
+
+- Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
+
+```javascript
+model Books {
+    id                Int     @id @default(autoincrement())
+    title             String
+    description       String?
+    yearOfPublication Int
+    author            Authors @relation(fields: [authorId], references: [id])
+    authorId          Int
 }
 ```
 
@@ -962,3 +998,56 @@ func (c *Controller) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusNoContent)
 }
 ```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the new endpoint:
+
+```bash
+$ curl -i -X DELETE http://localhost:8080/authors/1
+HTTP/1.1 204 No Content
+```
+
+- Awesome! For the `/books/<id>` endpoint, the same logic can be used, changing only the model used in the `GORM` query.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- All right, one more operation done! Next: _Create_
+  - *C*reate
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - *U*pdate
+  - ~~*D*elete~~ :ballot_box_with_check:
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- For the _Create_ operation, we will use the `POST` HTTP method in the endpoints `/authors` and `/books`:
+
+| **HTTP Method** |  **Endpoint**   |      **Description**      |
+| :-------------: | :-------------: | :-----------------------: |
+|      POST       |    `/authors`   |      Insert an author     |
+|      POST       |     `/books`    |       Inserts a book      |
+
+- Also, when requesting these endpoints, we'll need a payload with the data to be added.
+

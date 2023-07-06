@@ -12,6 +12,10 @@ import (
 
 func (c *Controller) Authors() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			c.CreateAuthor(w, r)
+			return
+		}
 		if r.Method == http.MethodGet {
 			c.ListAuthors(w, r)
 			return
@@ -83,9 +87,36 @@ func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
 	w.Write(result)
 }
 
-func CreateAuthor(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Create author"))
+func (c *Controller) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var payload createAuthorPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		log.Fatal(err)
+		return
+	}
+	author := &model.Author{
+		FirstName: payload.FirstName,
+		LastName:  payload.LastName,
+	}
+	if err := c.db.Create(&author).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	result, err := json.Marshal(author)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write(result)
+}
+
+type createAuthorPayload struct {
+	FirstName string
+	LastName  string
 }
 
 func UpdateAuthor(w http.ResponseWriter, r *http.Request) {
