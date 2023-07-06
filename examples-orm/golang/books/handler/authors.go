@@ -38,7 +38,7 @@ func (c *Controller) AuthorsByID() http.HandlerFunc {
 
 func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
 	var authors []model.Author
-	err := c.db.Find(&authors).Error
+	err := c.db.Preload("Books").Find(&authors).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusNotFound)
@@ -62,7 +62,7 @@ func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/authors/"):]
 	var author model.Author
-	err := c.db.First(&author, id).Error
+	err := c.db.Preload("Books").First(&author, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusNotFound)
