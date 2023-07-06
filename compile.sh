@@ -26,3 +26,6 @@ function process_files {
 process_files "$source_folder"
 
 echo "All .md files from folder $source_folder have been appended to $output_file."
+
+# Fix assets path for GH Pages
+sed -i 's/\/assets/\.\/assets/g' "$output_file"

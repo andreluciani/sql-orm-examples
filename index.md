@@ -79,7 +79,7 @@ section li em {
 
 ### SQL Database Example
 
-![h:550](/assets/example-database.png)
+![h:550](./assets/example-database.png)
 
  <!-- Take a look at this database architecture. It shows tables and relations between them. In the next slides we'll understand how everything is linked and model ourselves a few examples. -->
 
@@ -120,7 +120,7 @@ In relational databases, the data is stored in **tables**
 
 `blog` database:
 
-![h:190](/assets/tables.png)
+![h:190](./assets/tables.png)
 
 4 tables, 3 _relations_
 
@@ -778,7 +778,7 @@ Example: A person and their birthplace, an employee and their salary, a user and
 
 # _One-to-One_
 
-![h:500](/assets/one-to-one.png)
+![h:500](./assets/one-to-one.png)
 
 ---
 
@@ -836,7 +836,7 @@ Example: A country and its states or cities, students and the class they belong 
 
 # _One-to-Many_
 
-![h:200](/assets/one-to-many.png)
+![h:200](./assets/one-to-many.png)
 
 ---
 
@@ -907,7 +907,7 @@ li {
 
 # _Many-to-Many_
 
-![h:350](/assets/many-to-many.png)
+![h:350](./assets/many-to-many.png)
 
 - _Many-to-many_ relation between `customers` and `flights` throught the `passengers` table
 - The `flights` table has two _one-to-one_ relationships with `airports` table.
@@ -1031,7 +1031,7 @@ REFERENCES airports(id);
 ## Querying with SQL
 
 - Here's the database schema diagram used in the examples:
-  ![w:1000](/assets/blog-schema.png)
+  ![w:1000](./assets/blog-schema.png)
 - It is a blog database with six tables
 
 ---
@@ -1252,7 +1252,7 @@ li {
 
 ## `LEFT JOIN`
 
-![h:400](/assets/left-join.png)
+![h:400](./assets/left-join.png)
 
 ---
 
@@ -1394,7 +1394,7 @@ LIMIT 5;
 
 ## `LEFT JOIN` (excluding)
 
-![h:400](/assets/left-excluding-join.png)
+![h:400](./assets/left-excluding-join.png)
 
 ---
 
@@ -1495,7 +1495,7 @@ code {
 
 ## `RIGHT JOIN`
 
-![h:400](/assets/right-join.png)
+![h:400](./assets/right-join.png)
 
 ---
 
@@ -1505,7 +1505,7 @@ code {
 
 ## `RIGHT JOIN` (excluding)
 
-![h:400](/assets/right-excluding-join.png)
+![h:400](./assets/right-excluding-join.png)
 
 ---
 
@@ -1556,7 +1556,7 @@ WHERE table_one.column_name IS NULL;
 
 ## `INNER JOIN`
 
-![h:400](/assets/inner-join.png)
+![h:400](./assets/inner-join.png)
 
 ---
 
@@ -1687,7 +1687,7 @@ blog-# WHERE users.city_id IS NULL;
 
 ## `FULL OUTER JOIN`
 
-![h:400](/assets/full-outer-join.png)
+![h:400](./assets/full-outer-join.png)
 
 ---
 
@@ -1697,7 +1697,7 @@ blog-# WHERE users.city_id IS NULL;
 
 ## `FULL OUTER JOIN` (excluding)
 
-![h:400](/assets/full-excluding-join.png)
+![h:400](./assets/full-excluding-join.png)
 
 ---
 
@@ -2294,13 +2294,13 @@ Nothing is impossible.
 <div class="border-right-white">
 Current
 
-![h:370](/assets/go-server.png)
+![h:370](./assets/go-server.png)
 
 </div>
 <div>
 Goal
 
-![h:370](/assets/go-server-postgres.png)
+![h:370](./assets/go-server-postgres.png)
 
 </div>
 </div>
@@ -2967,7 +2967,7 @@ Returns:
 
 - Now, let's take another step and implement a GO API with `GORM` to do CRUD operations. Here's the schema to be implemented:
 
-![h:300](/assets/books-schema.png)
+![h:300](./assets/books-schema.png)
 
 ---
 
@@ -2998,6 +2998,7 @@ type Author struct {
   gorm.Model
   FirstName string
   LastName  string
+  Books     []Book
 }
 ```
 
@@ -3023,6 +3024,41 @@ type Book struct {
   YearOfPublication int
   AuthorID          uint
   Author            Author
+}
+```
+
+---
+
+#### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
+
+- Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
+
+```javascript
+model Authors {
+    id        Int       @id @default(autoincrement())
+    firstName String?
+    lastName  String?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    deletedAt DateTime?
+    books     Books[]
+}
+```
+
+---
+
+#### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
+
+- Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
+
+```javascript
+model Books {
+    id                Int     @id @default(autoincrement())
+    title             String
+    description       String?
+    yearOfPublication Int
+    author            Authors @relation(fields: [authorId], references: [id])
+    authorId          Int
 }
 ```
 
@@ -3919,6 +3955,59 @@ func (c *Controller) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
 
 ---
 
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the new endpoint:
+
+```bash
+$ curl -i -X DELETE http://localhost:8080/authors/1
+HTTP/1.1 204 No Content
+```
+
+- Awesome! For the `/books/<id>` endpoint, the same logic can be used, changing only the model used in the `GORM` query.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- All right, one more operation done! Next: _Create_
+  - *C*reate
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - *U*pdate
+  - ~~*D*elete~~ :ballot_box_with_check:
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- For the _Create_ operation, we will use the `POST` HTTP method in the endpoints `/authors` and `/books`:
+
+| **HTTP Method** |  **Endpoint**   |      **Description**      |
+| :-------------: | :-------------: | :-----------------------: |
+|      POST       |    `/authors`   |      Insert an author     |
+|      POST       |     `/books`    |       Inserts a book      |
+
+- Also, when requesting these endpoints, we'll need a payload with the data to be added.
+
+
+---
+
 # Additional ORM Concepts
 
 - **Lazy Loading vs. Eager Loading**
@@ -3988,4 +4077,4 @@ section li em {
 Take a look at this [xkcd](https://imgs.xkcd.com/comics/exploits_of_a_mom.png) comic:
 
 ![h:350](
-  /assets/exploits_of_a_mom.png)
+  ./assets/exploits_of_a_mom.png)
