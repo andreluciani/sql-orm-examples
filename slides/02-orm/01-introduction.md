@@ -545,7 +545,7 @@ li {
 
 - Complex queries
 - Additional tech
-- Obfuscates underlying SQL behaviour
+- Obfuscates SQL behaviour
 
 </div>
 </div>
@@ -851,6 +851,9 @@ func getRandomQuote() (string, error) {
 <style scoped>
   li {
     font-size: 28px;
+  }
+  code {
+    font-size: 90%;
   }
 </style>
 

@@ -26,7 +26,9 @@ Now we're going to see a few additional ORM concepts that are very important to 
 
 <!-- _class: invert -->
 
-# Lazy Loading vs. Eager Loading
+# Lazy Loading
+# x
+# Eager Loading
 
 ---
 

@@ -2725,32 +2725,32 @@ go get -u gorm.io/driver/postgres
 ```go
 // package, import ...
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 
 var (
-	initialQuotes = []Quotes{
-		{Quote: "Nothing is impossible"},
-		{Quote: "If you`re going through hell, keep going"},
-		{Quote: "We need much less than we think we need"},
-		{Quote: "If things go wrong, don`t go with them"},
-		{Quote: "Whatever you are, be a good one"},
-	}
+  initialQuotes = []Quotes{
+    {Quote: "Nothing is impossible"},
+    {Quote: "If you`re going through hell, keep going"},
+    {Quote: "We need much less than we think we need"},
+    {Quote: "If things go wrong, don`t go with them"},
+    {Quote: "Whatever you are, be a good one"},
+  }
 )
 
 func main() {
-	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+  dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+  db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
 
-	db.AutoMigrate(&Quotes{})
+  db.AutoMigrate(&Quotes{})
 
-	for _, quote := range initialQuotes {
-		db.Create(&quote)
-	}
+  for _, quote := range initialQuotes {
+    db.Create(&quote)
+  }
 }
 ```
 
@@ -2778,32 +2778,32 @@ func main() {
 ```go
 // package, import ...
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 
 var (
-	initialQuotes = []Quotes{
-		{Quote: "Nothing is impossible"},
-		{Quote: "If you`re going through hell, keep going"},
-		{Quote: "We need much less than we think we need"},
-		{Quote: "If things go wrong, don`t go with them"},
-		{Quote: "Whatever you are, be a good one"},
-	}
+  initialQuotes = []Quotes{
+    {Quote: "Nothing is impossible"},
+    {Quote: "If you`re going through hell, keep going"},
+    {Quote: "We need much less than we think we need"},
+    {Quote: "If things go wrong, don`t go with them"},
+    {Quote: "Whatever you are, be a good one"},
+  }
 )
 
 func main() {
-	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+  dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+  db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
 
-	db.AutoMigrate(&Quotes{})
+  db.AutoMigrate(&Quotes{})
 
-	for _, quote := range initialQuotes {
-		db.Create(&quote)
-	}
+  for _, quote := range initialQuotes {
+    db.Create(&quote)
+  }
 }
 ```
 
@@ -2853,8 +2853,8 @@ Now, let's update the server to query the database using `GORM`!
 var db *gorm.DB
 
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 ```
 
@@ -2875,12 +2875,12 @@ type Quotes struct {
 
 ```go
 func getRandomQuote() (string, error) {
-	var quote Quotes
-	err := db.Order("RANDOM()").Take(&quote).Error
-	if err != nil {
-		return "", err
-	}
-	return quote.Quote, nil
+  var quote Quotes
+  err := db.Order("RANDOM()").Take(&quote).Error
+  if err != nil {
+    return "", err
+  }
+  return quote.Quote, nil
 }
 ```
 

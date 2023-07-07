@@ -31,7 +31,7 @@ math: mathjax
 
 - The `SELECT` statement was the first DML that was presented, and it is the command we will use to make more complex queries.
 
-- We already know how to specify which _columns_ and which _table_ we want to get results, but that is pretty limited
+- We already know how to specify which _columns_ and which _table_ we want to get results, but that is a bit limited
 
 ---
 
@@ -130,7 +130,6 @@ WHERE condition;
 - The `condition` can vary a lot. Some examples are:
   - a numeric column is greater than some value
   - a column is not null
-  - the row was created before a date
   - and so on...
 
 ---
@@ -205,7 +204,7 @@ ORDER BY column ASC;
 
 ## The `ORDER BY` clause
 
-- Let's order the cities stored in table `cities` based on the `population` colum, from the most inhabited to the least inhabited:
+- Let's order the cities stored in table `cities` based on the `population` column, from the most inhabited to the least inhabited:
 
 ```sql
 SELECT * FROM cities

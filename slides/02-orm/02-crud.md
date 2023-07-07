@@ -129,7 +129,7 @@ model Books {
 
 - Back to `GORM` ...
 
-- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding will make simpler to explain the next steps.
+- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding initial values will make simpler to explain the next steps.
 
 ---
 
@@ -304,7 +304,7 @@ li,code,td,th {
 
 #### CRUD with `GORM`
 
-- The code will be structered as follows:
+- The code will be structured as follows:
 
 ```
 .
@@ -539,7 +539,7 @@ func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
 
 - In the previous slides, the method `.Preload("Books")` was called.
 
-- This is a feature from `GORM` that tells the query to return the author associated with the book.
+- This is a feature from `GORM` that tells the query to return the books associated with the author.
 
 - This technique is called _eager loading_ and will be exaplained in more detail later
 
@@ -1218,11 +1218,39 @@ json: cannot unmarshal number into Go struct field createAuthorPayload.FirstName
 
 ```go
 type createBookPayload struct {
-	Title             string
-	Description       string
-	YearOfPublication int
-	AuthorID          int
+  Title             string
+  Description       string
+  YearOfPublication int
+  AuthorID          int
 }
+```
+
+- The only difference is checking if the `author_id` it exists.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+// ...
+if payload.AuthorID != 0 {
+    var author model.Author
+    err := c.db.First(&author, payload.AuthorID).Error
+    if err != nil {
+      if errors.Is(err, gorm.ErrRecordNotFound) {
+        w.WriteHeader(http.StatusNotFound)
+        w.Write([]byte("author not found."))
+        return
+      }
+      w.WriteHeader(http.StatusInternalServerError)
+      log.Fatal(err)
+      return
+    }
+    book.AuthorID = payload.AuthorID
+  }
+// ...
 ```
 
 ---
@@ -1252,8 +1280,8 @@ li,code,td,th {
 
 | **HTTP Method** | **Endpoint** |  **Description**  |
 | :-------------: | :----------: | :---------------: |
-|     PATCH       |  `/authors`  | Updates an author |
-|     PATCH       |   `/books`   |  Updates a book   |
+|      PATCH      |  `/authors`  | Updates an author |
+|      PATCH      |   `/books`   |  Updates a book   |
 
 ---
 
@@ -1268,22 +1296,22 @@ li,code,td,th {
 
 ```diff
 func (c *Controller) AuthorsByID() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			c.GetAuthorByID(w, r)
-			return
-		}
-+		if r.Method == http.MethodPatch {
-+			c.UpdateAuthor(w, r)
-+			return
-+		}
-		if r.Method == http.MethodDelete {
-			c.DeleteAuthor(w, r)
-			return
-		}
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		w.Write([]byte("Method not allowed"))
-	})
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+      c.GetAuthorByID(w, r)
+      return
+    }
++    if r.Method == http.MethodPatch {
++      c.UpdateAuthor(w, r)
++      return
++    }
+    if r.Method == http.MethodDelete {
+      c.DeleteAuthor(w, r)
+      return
+    }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
+  })
 }
 ```
 
@@ -1302,19 +1330,19 @@ li,code,td,th {
 
 ```go
 func (c *Controller) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/authors/"):]
-	var author model.Author
-	err := c.db.Preload("Books").First(&author, id).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("author not found."))
-			return
-		}
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
+  id := r.URL.Path[len("/authors/"):]
+  var author model.Author
+  err := c.db.Preload("Books").First(&author, id).Error
+  if err != nil {
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+      w.WriteHeader(http.StatusNotFound)
+      w.Write([]byte("author not found."))
+      return
+    }
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
 // ...
 ```
 
@@ -1333,26 +1361,26 @@ li,code,td,th {
 
 ```go
 // ...
-	defer r.Body.Close()
-	var payload updateAuthorPayload
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
-		return
-	}
+  defer r.Body.Close()
+  var payload updateAuthorPayload
+  if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    w.Write([]byte(err.Error()))
+    return
+  }
 
-	if payload.FirstName != "" {
-		author.FirstName = payload.FirstName
-	}
+  if payload.FirstName != "" {
+    author.FirstName = payload.FirstName
+  }
 
-	if payload.LastName != "" {
-		author.LastName = payload.LastName
-	}
+  if payload.LastName != "" {
+    author.LastName = payload.LastName
+  }
 
-	if err := c.db.Save(&author).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-	}
+  if err := c.db.Save(&author).Error; err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+  }
 // ...
 ```
 
@@ -1371,14 +1399,14 @@ li,code,td,th {
 
 ```go
 // ...
-	result, err := json.Marshal(author)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Fatal(err)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-	w.Write(result)
+  result, err := json.Marshal(author)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusCreated)
+  w.Write(result)
 }
 ```
 
@@ -1505,6 +1533,7 @@ $ curl -X PATCH http://localhost:8080/authors/1 \
   -d '{"firstName":123}'
 json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName of type string
 ```
+
 ---
 
 <!-- _class: invert -->
@@ -1513,7 +1542,7 @@ json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName
 
 - The implementation for `/books` is (again) quite similar.
 
-- The only differe
+- The only difference is, again, if there is an `author_id` in the payload, checking if it exists.
 
 ---
 
@@ -1526,4 +1555,3 @@ json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName
   - ~~*R*etrieve~~ :ballot_box_with_check:
   - ~~*U*pdate~~ :ballot_box_with_check:
   - ~~*D*elete~~ :ballot_box_with_check:
-

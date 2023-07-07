@@ -100,6 +100,22 @@ func (c *Controller) CreateBook(w http.ResponseWriter, r *http.Request) {
 		Description:       payload.Description,
 		YearOfPublication: payload.YearOfPublication,
 	}
+
+	if payload.AuthorID != 0 {
+		var author model.Author
+		err := c.db.First(&author, payload.AuthorID).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				w.WriteHeader(http.StatusNotFound)
+				w.Write([]byte("author not found."))
+				return
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Fatal(err)
+			return
+		}
+		book.AuthorID = payload.AuthorID
+	}
 	if err := c.db.Create(&book).Error; err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Fatal(err)
@@ -118,7 +134,7 @@ type createBookPayload struct {
 	Title             string
 	Description       string
 	YearOfPublication int
-	AuthorID          int
+	AuthorID          uint
 }
 
 func (c *Controller) UpdateBook(w http.ResponseWriter, r *http.Request) {

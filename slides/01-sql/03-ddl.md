@@ -297,7 +297,7 @@ NOTICE:  drop cascades to constraint user_post_fk1 on table user_post
 DROP TABLE
 ```
 
-- The operation returns which constraints were dropped because of `CASCADE`.
+- The operation returns which dependent objects were dropped because of `CASCADE`.
 
 ---
 

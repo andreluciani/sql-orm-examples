@@ -721,7 +721,7 @@ NOTICE:  drop cascades to constraint user_post_fk1 on table user_post
 DROP TABLE
 ```
 
-- The operation returns which constraints were dropped because of `CASCADE`.
+- The operation returns which dependent objects were dropped because of `CASCADE`.
 
 ---
 
@@ -1000,7 +1000,7 @@ REFERENCES airports(id);
 
 - The `SELECT` statement was the first DML that was presented, and it is the command we will use to make more complex queries.
 
-- We already know how to specify which _columns_ and which _table_ we want to get results, but that is pretty limited
+- We already know how to specify which _columns_ and which _table_ we want to get results, but that is a bit limited
 
 ---
 
@@ -1099,7 +1099,6 @@ WHERE condition;
 - The `condition` can vary a lot. Some examples are:
   - a numeric column is greater than some value
   - a column is not null
-  - the row was created before a date
   - and so on...
 
 ---
@@ -1174,7 +1173,7 @@ ORDER BY column ASC;
 
 ## The `ORDER BY` clause
 
-- Let's order the cities stored in table `cities` based on the `population` colum, from the most inhabited to the least inhabited:
+- Let's order the cities stored in table `cities` based on the `population` column, from the most inhabited to the least inhabited:
 
 ```sql
 SELECT * FROM cities
@@ -2379,7 +2378,7 @@ quotes_db=# SELECT * FROM quotes;
 ### An Example With Go
 
 - Instead of using `psql` we want to query the database **from the server**.
-- To achieve that we need to _connect_ to the database (DB) and then _do the query_ to get a quote e and return it in the response.
+- To achieve that we need to _connect_ to the database (DB) and then _do the query_ to get a quote and return it in the response.
 
 ---
 
@@ -2454,10 +2453,10 @@ li {
 
 - Testing the connection:
 
-```diff
+```bash
 $ go run main.go
-+ 2023/07/01 00:20:51 Connected to the database
-  2023/07/01 00:20:51 Listening on port 8080
+ 2023/07/01 00:20:51 Connected to the database
+ 2023/07/01 00:20:51 Listening on port 8080
 ```
 
 - Awesome, we are connected to the DB. Now we can query the table with quotes!
@@ -2635,7 +2634,7 @@ li {
 
 - Complex queries
 - Additional tech
-- Obfuscates underlying SQL behaviour
+- Obfuscates SQL behaviour
 
 </div>
 </div>
@@ -2725,32 +2724,32 @@ go get -u gorm.io/driver/postgres
 ```go
 // package, import ...
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 
 var (
-	initialQuotes = []Quotes{
-		{Quote: "Nothing is impossible"},
-		{Quote: "If you`re going through hell, keep going"},
-		{Quote: "We need much less than we think we need"},
-		{Quote: "If things go wrong, don`t go with them"},
-		{Quote: "Whatever you are, be a good one"},
-	}
+  initialQuotes = []Quotes{
+    {Quote: "Nothing is impossible"},
+    {Quote: "If you`re going through hell, keep going"},
+    {Quote: "We need much less than we think we need"},
+    {Quote: "If things go wrong, don`t go with them"},
+    {Quote: "Whatever you are, be a good one"},
+  }
 )
 
 func main() {
-	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+  dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+  db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
 
-	db.AutoMigrate(&Quotes{})
+  db.AutoMigrate(&Quotes{})
 
-	for _, quote := range initialQuotes {
-		db.Create(&quote)
-	}
+  for _, quote := range initialQuotes {
+    db.Create(&quote)
+  }
 }
 ```
 
@@ -2778,32 +2777,32 @@ func main() {
 ```go
 // package, import ...
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 
 var (
-	initialQuotes = []Quotes{
-		{Quote: "Nothing is impossible"},
-		{Quote: "If you`re going through hell, keep going"},
-		{Quote: "We need much less than we think we need"},
-		{Quote: "If things go wrong, don`t go with them"},
-		{Quote: "Whatever you are, be a good one"},
-	}
+  initialQuotes = []Quotes{
+    {Quote: "Nothing is impossible"},
+    {Quote: "If you`re going through hell, keep going"},
+    {Quote: "We need much less than we think we need"},
+    {Quote: "If things go wrong, don`t go with them"},
+    {Quote: "Whatever you are, be a good one"},
+  }
 )
 
 func main() {
-	dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
+  dsn := "host=localhost dbname=quotes_db port=5432 sslmode=disable"
+  db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+  if err != nil {
+    panic("failed to connect database")
+  }
 
-	db.AutoMigrate(&Quotes{})
+  db.AutoMigrate(&Quotes{})
 
-	for _, quote := range initialQuotes {
-		db.Create(&quote)
-	}
+  for _, quote := range initialQuotes {
+    db.Create(&quote)
+  }
 }
 ```
 
@@ -2853,8 +2852,8 @@ Now, let's update the server to query the database using `GORM`!
 var db *gorm.DB
 
 type Quotes struct {
-	ID    uint `gorm:"primaryKey"`
-	Quote string
+  ID    uint `gorm:"primaryKey"`
+  Quote string
 }
 ```
 
@@ -2875,12 +2874,12 @@ type Quotes struct {
 
 ```go
 func getRandomQuote() (string, error) {
-	var quote Quotes
-	err := db.Order("RANDOM()").Take(&quote).Error
-	if err != nil {
-		return "", err
-	}
-	return quote.Quote, nil
+  var quote Quotes
+  err := db.Order("RANDOM()").Take(&quote).Error
+  if err != nil {
+    return "", err
+  }
+  return quote.Quote, nil
 }
 ```
 
@@ -2941,6 +2940,9 @@ func getRandomQuote() (string, error) {
 <style scoped>
   li {
     font-size: 28px;
+  }
+  code {
+    font-size: 90%;
   }
 </style>
 
@@ -3029,6 +3031,16 @@ type Book struct {
 
 ---
 
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
+
+- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
+
+---
+
 #### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
 
 - Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
@@ -3053,12 +3065,15 @@ model Authors {
 
 ```javascript
 model Books {
-    id                Int     @id @default(autoincrement())
+    id                Int       @id @default(autoincrement())
     title             String
     description       String?
     yearOfPublication Int
-    author            Authors @relation(fields: [authorId], references: [id])
+    author            Authors   @relation(fields: [authorId], references: [id])
     authorId          Int
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+    deletedAt         DateTime?
 }
 ```
 
@@ -3068,17 +3083,9 @@ model Books {
 
 #### CRUD with `GORM`
 
-- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
+- Back to `GORM` ...
 
-- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
-
----
-
-<!-- _class: invert -->
-
-#### CRUD with `GORM`
-
-- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding will make simpler to explain the next steps.
+- Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding initial values will make simpler to explain the next steps.
 
 ---
 
@@ -3189,7 +3196,7 @@ func main() {
 
 #### CRUD with `GORM`
 
-- Awesome! Now we have a database called `bookd_db` with a few entries to work with.
+- Awesome! Now we have a database called `books_db` with a few entries to work with.
 
 ```
 $ go run seed/main.go
@@ -3253,7 +3260,7 @@ li,code,td,th {
 
 #### CRUD with `GORM`
 
-- The code will be structered as follows:
+- The code will be structured as follows:
 
 ```
 .
@@ -3422,7 +3429,7 @@ li,code,td,th {
 // ...
 func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
   var authors []model.Author
-  err := c.db.Find(&authors).Error
+  err := c.db.Preload("Books").Find(&authors).Error
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     log.Fatal(err)
@@ -3458,7 +3465,7 @@ li,code,td,th {
 func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
   id := r.URL.Path[len("/authors/"):]
   var author model.Author
-  err := c.db.First(&author, id).Error
+  err := c.db.Preload("Books").First(&author, id).Error
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     log.Fatal(err)
@@ -3474,6 +3481,23 @@ func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
   w.Write(result)
 }
 ```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  code {
+    font-size: 80%;
+  }
+  </style>
+
+### CRUD with `GORM`
+
+- In the previous slides, the method `.Preload("Books")` was called.
+
+- This is a feature from `GORM` that tells the query to return the books associated with the author.
+
+- This technique is called _eager loading_ and will be exaplained in more detail later
 
 ---
 
@@ -3504,21 +3528,23 @@ li,code,td,th {
 ```bash
 $ curl http://localhost:8080/authors | jq
 [
-  {
+   {
     "ID": 1,
-    "CreatedAt": "2023-07-05T01:05:05.803875Z",
-    "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+    "CreatedAt": "2023-07-06T01:18:28.220539Z",
+    "UpdatedAt": "2023-07-06T01:18:28.220539Z",
     "DeletedAt": null,
     "FirstName": "William",
-    "LastName": "Shakespeare"
+    "LastName": "Shakespeare",
+    "Books": [{...},{...}]
   },
   {
     "ID": 2,
-    "CreatedAt": "2023-07-05T01:05:05.805375Z",
-    "UpdatedAt": "2023-07-05T01:05:05.805375Z",
+    "CreatedAt": "2023-07-06T01:18:28.221913Z",
+    "UpdatedAt": "2023-07-06T01:18:28.221913Z",
     "DeletedAt": null,
     "FirstName": "Harper",
-    "LastName": "Lee"
+    "LastName": "Lee",
+    "Books": [{...}]
   }
 ]
 ```
@@ -3528,7 +3554,7 @@ $ curl http://localhost:8080/authors | jq
 <!-- _class: invert -->
 <style scoped>
 li,code,td,th {
-  font-size: 80%;
+  font-size: 75%;
 }
 </style>
 
@@ -3537,14 +3563,26 @@ li,code,td,th {
 - `/authors/<id>` endpoint:
 
 ```bash
-$ curl http://localhost:8080/authors/1 | jq
+$ curl http://localhost:8080/authors/2 | jq
 {
-  "ID": 1,
-  "CreatedAt": "2023-07-05T01:05:05.803875Z",
-  "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+  "ID": 2,
+  "CreatedAt": "2023-07-06T01:18:28.221913Z",
+  "UpdatedAt": "2023-07-06T01:18:28.221913Z",
   "DeletedAt": null,
-  "FirstName": "William",
-  "LastName": "Shakespeare"
+  "FirstName": "Harper",
+  "LastName": "Lee",
+  "Books": [
+    {
+      "ID": 3,
+      "CreatedAt": "2023-07-06T01:18:28.226073Z",
+      "UpdatedAt": "2023-07-06T01:18:28.226073Z",
+      "DeletedAt": null,
+      "Title": "To Kill a Mockingbird",
+      "Description": "Set in the racially-charged 1930s ...",
+      "YearOfPublication": 1860,
+      "AuthorID": 2,
+    }
+  ]
 }
 ```
 
@@ -3739,25 +3777,11 @@ func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
 ---
 
 <!-- _class: invert -->
-
-##### CRUD with `GORM`
-
-- In the previous slides, an additional method was called: `.Preload("Authors")`
-
-- This is a feature from `GORM` that tells the query to return the author associated with the book.
-
-- This technique is called _eager loading_ and will be exaplained in more detail later
-
----
-
-<!-- _class: invert -->
 <style scoped>
 li,code,td,th {
-  font-size: 80%;
+  font-size: 90%;
 }
 </style>
-
-##### CRUD with `GORM`
 
 - Testing the `/books` endpoint:
 
@@ -3998,13 +4022,502 @@ li,code,td,th {
 
 - For the _Create_ operation, we will use the `POST` HTTP method in the endpoints `/authors` and `/books`:
 
-| **HTTP Method** |  **Endpoint**   |      **Description**      |
-| :-------------: | :-------------: | :-----------------------: |
-|      POST       |    `/authors`   |      Insert an author     |
-|      POST       |     `/books`    |       Inserts a book      |
+| **HTTP Method** | **Endpoint** |  **Description**  |
+| :-------------: | :----------: | :---------------: |
+|      POST       |  `/authors`  | Inserts an author |
+|      POST       |   `/books`   |  Inserts a book   |
 
 - Also, when requesting these endpoints, we'll need a payload with the data to be added.
 
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```diff
+func (c *Controller) Authors() http.HandlerFunc {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++    if r.Method == http.MethodPost {
++      c.CreateAuthor(w, r)
++      return
++    }
+    if r.Method == http.MethodGet {
+      c.ListAuthors(w, r)
+      return
+    }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
+  })
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```go
+func (c *Controller) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+  defer r.Body.Close()
+  var payload createAuthorPayload
+  if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    w.Write([]byte(err.Error()))
+    return
+  }
+  author := &model.Author{
+    FirstName: payload.FirstName,
+    LastName:  payload.LastName,
+  }
+  if err := c.db.Create(&author).Error; err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+  }
+  result, err := json.Marshal(author)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusCreated)
+  w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `createAuthorPayload` type is declared with the fields and types used in the payload:
+
+```go
+type createAuthorPayload struct {
+  FirstName string
+  LastName  string
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X POST 'http://localhost:8080/authors' \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"Jane","lastName":"Austen"}' | jq
+{
+  "ID": 9,
+  "CreatedAt": "2023-07-06T23:44:41.681442697Z",
+  "UpdatedAt": "2023-07-06T23:44:41.681442697Z",
+  "DeletedAt": null,
+  "FirstName": "Jane",
+  "LastName": "Austen",
+  "Books": null
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X POST 'http://localhost:8080/authors' \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":123,"lastName":"Austen"}'
+json: cannot unmarshal number into Go struct field createAuthorPayload.FirstName of type string
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- The implementation for `/books` is quite similar. Here's the `createBookPayload` type declaration:
+
+```go
+type createBookPayload struct {
+  Title             string
+  Description       string
+  YearOfPublication int
+  AuthorID          int
+}
+```
+
+- The only difference is checking if the `author_id` it exists.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+```go
+// ...
+if payload.AuthorID != 0 {
+    var author model.Author
+    err := c.db.First(&author, payload.AuthorID).Error
+    if err != nil {
+      if errors.Is(err, gorm.ErrRecordNotFound) {
+        w.WriteHeader(http.StatusNotFound)
+        w.Write([]byte("author not found."))
+        return
+      }
+      w.WriteHeader(http.StatusInternalServerError)
+      log.Fatal(err)
+      return
+    }
+    book.AuthorID = payload.AuthorID
+  }
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- One more operation to go! Next: _Update_
+  - ~~*C*reate~~ :ballot_box_with_check:
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - *U*pdate
+  - ~~*D*elete~~ :ballot_box_with_check:
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- For the _Update_ operation, we will use the `PATCH` HTTP method in the endpoints `/authors` and `/books`:
+
+| **HTTP Method** | **Endpoint** |  **Description**  |
+| :-------------: | :----------: | :---------------: |
+|      PATCH      |  `/authors`  | Updates an author |
+|      PATCH      |   `/books`   |  Updates a book   |
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```diff
+func (c *Controller) AuthorsByID() http.HandlerFunc {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+      c.GetAuthorByID(w, r)
+      return
+    }
++    if r.Method == http.MethodPatch {
++      c.UpdateAuthor(w, r)
++      return
++    }
+    if r.Method == http.MethodDelete {
+      c.DeleteAuthor(w, r)
+      return
+    }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
+  })
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- First we get the author being updated and check if it exists:
+
+```go
+func (c *Controller) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+  id := r.URL.Path[len("/authors/"):]
+  var author model.Author
+  err := c.db.Preload("Books").First(&author, id).Error
+  if err != nil {
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+      w.WriteHeader(http.StatusNotFound)
+      w.Write([]byte("author not found."))
+      return
+    }
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Then we load the payload and update the fields:
+
+```go
+// ...
+  defer r.Body.Close()
+  var payload updateAuthorPayload
+  if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    w.Write([]byte(err.Error()))
+    return
+  }
+
+  if payload.FirstName != "" {
+    author.FirstName = payload.FirstName
+  }
+
+  if payload.LastName != "" {
+    author.LastName = payload.LastName
+  }
+
+  if err := c.db.Save(&author).Error; err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+  }
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Lastly we return the author with updated fields:
+
+```go
+// ...
+  result, err := json.Marshal(author)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusCreated)
+  w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `updateAuthorPayload` type is identical with the `createAuthorPayload` type:
+
+```go
+type updateAuthorPayload struct {
+  FirstName string
+  LastName  string
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"Gulielmus","lastName":"Shakspere"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "Gulielmus",
+  "LastName": "Shakspere",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"William"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "William",
+  "LastName": "Shakspere",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"lastName":"Shakespeare"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "William",
+  "LastName": "Shakespeare",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":123}'
+json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName of type string
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- The implementation for `/books` is (again) quite similar.
+
+- The only difference is, again, if there is an `author_id` in the payload, checking if it exists.
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- That completes the CRUD operations :tada:
+  - ~~*C*reate~~ :ballot_box_with_check:
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - ~~*U*pdate~~ :ballot_box_with_check:
+  - ~~*D*elete~~ :ballot_box_with_check:
+
+---
+
+# ORMs
+## Next Steps
+
+Now we're going to see a few additional ORM concepts that are very important to know...
 
 ---
 
@@ -4018,7 +4531,9 @@ li,code,td,th {
 
 <!-- _class: invert -->
 
-# Lazy Loading vs. Eager Loading
+# Lazy Loading
+# x
+# Eager Loading
 
 ---
 
