@@ -1511,6 +1511,16 @@ json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName
 
 #### CRUD with `GORM`
 
+- The implementation for `/books` is (again) quite similar.
+
+- The only differe
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
 - That completes the CRUD operations :tada:
   - ~~*C*reate~~ :ballot_box_with_check:
   - ~~*R*etrieve~~ :ballot_box_with_check:

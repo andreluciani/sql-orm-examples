@@ -11,5 +11,6 @@ curl -X PATCH http://localhost:8080/authors/1 -H 'Content-Type: application/json
 curl -X PATCH http://localhost:8080/authors/1 -H 'Content-Type: application/json'  -d '{"firstName":"William"}' | jq
 curl -X PATCH http://localhost:8080/authors/1 -H 'Content-Type: application/json'  -d '{"lastName":"Shakespeare"}' | jq
 curl -X PATCH http://localhost:8080/authors/1 -H 'Content-Type: application/json'  -d '{"firstName":123}' | jq
+curl -X PATCH http://localhost:8080/books/1 -H 'Content-Type: application/json'  -d '{"title":"Macbeths"}' | jq
 # Delete
 curl -i -X DELETE http://localhost:8080/authors/10

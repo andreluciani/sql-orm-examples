@@ -27,6 +27,10 @@ func (c *Controller) BooksByID() http.HandlerFunc {
 			c.GetBookByID(w, r)
 			return
 		}
+		if r.Method == http.MethodPatch {
+			c.UpdateBook(w, r)
+			return
+		}
 		if r.Method == http.MethodDelete {
 			c.DeleteBook(w, r)
 			return
@@ -37,8 +41,8 @@ func (c *Controller) BooksByID() http.HandlerFunc {
 }
 
 func (c *Controller) ListBooks(w http.ResponseWriter, r *http.Request) {
-	var Books []model.Book
-	err := c.db.Preload("Author").Find(&Books).Error
+	var books []model.Book
+	err := c.db.Preload("Author").Find(&books).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusNotFound)
@@ -49,7 +53,7 @@ func (c *Controller) ListBooks(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-	result, err := json.Marshal(Books)
+	result, err := json.Marshal(books)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Fatal(err)
@@ -60,9 +64,9 @@ func (c *Controller) ListBooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/Books/"):]
-	var Book model.Book
-	err := c.db.Preload("Author").First(&Book, id).Error
+	id := r.URL.Path[len("/books/"):]
+	var book model.Book
+	err := c.db.Preload("Author").First(&book, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusNotFound)
@@ -73,7 +77,7 @@ func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 		return
 	}
-	result, err := json.Marshal(Book)
+	result, err := json.Marshal(book)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Fatal(err)
@@ -117,10 +121,76 @@ type createBookPayload struct {
 	AuthorID          int
 }
 
-func UpdateBook(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Path[len("/Books/"):]
+func (c *Controller) UpdateBook(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/books/"):]
+	var book model.Book
+	err := c.db.Preload("Author").First(&book, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("Book not found."))
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+
+	defer r.Body.Close()
+	var payload updateBookPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	if payload.Title != "" {
+		book.Title = payload.Title
+	}
+
+	if payload.Description != "" {
+		book.Description = payload.Description
+	}
+
+	if payload.YearOfPublication != 0 {
+		book.YearOfPublication = payload.YearOfPublication
+	}
+
+	if payload.AuthorID != 0 {
+		var author model.Author
+		err := c.db.First(&author, payload.AuthorID).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				w.WriteHeader(http.StatusNotFound)
+				w.Write([]byte("author not found."))
+				return
+			}
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Fatal(err)
+			return
+		}
+		book.AuthorID = payload.AuthorID
+	}
+
+	if err := c.db.Save(&book).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	result, err := json.Marshal(book)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Update Book by ID: " + id))
+	w.Write(result)
+}
+
+type updateBookPayload struct {
+	Title             string
+	Description       string
+	YearOfPublication int
+	AuthorID          uint
 }
 
 func (c *Controller) DeleteBook(w http.ResponseWriter, r *http.Request) {
