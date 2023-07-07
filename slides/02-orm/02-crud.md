@@ -75,6 +75,16 @@ type Book struct {
 
 ---
 
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
+
+- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
+
+---
+
 #### CRUD with ~~`GORM`~~ [Prisma](https://www.prisma.io/)
 
 - Just for comparison, here is what the exact same models look like using Prisma (a TypeScript ORM)
@@ -99,12 +109,15 @@ model Authors {
 
 ```javascript
 model Books {
-    id                Int     @id @default(autoincrement())
+    id                Int       @id @default(autoincrement())
     title             String
     description       String?
     yearOfPublication Int
-    author            Authors @relation(fields: [authorId], references: [id])
+    author            Authors   @relation(fields: [authorId], references: [id])
     authorId          Int
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+    deletedAt         DateTime?
 }
 ```
 
@@ -114,15 +127,7 @@ model Books {
 
 #### CRUD with `GORM`
 
-- In the previous slides, we have used the [`gorm.Model`](https://gorm.io/docs/models.html#gorm-Model) struct to abstract a lot of things.
-
-- No need to explicitly declare the `id`, `created_at`, `updated_at` and `deleted_at` fields! :tada:
-
----
-
-<!-- _class: invert -->
-
-#### CRUD with `GORM`
+- Back to `GORM` ...
 
 - Let's create a seed file to add some initial data as well. We could have started with empty tables, too, but adding will make simpler to explain the next steps.
 
@@ -235,7 +240,7 @@ func main() {
 
 #### CRUD with `GORM`
 
-- Awesome! Now we have a database called `bookd_db` with a few entries to work with.
+- Awesome! Now we have a database called `books_db` with a few entries to work with.
 
 ```
 $ go run seed/main.go
@@ -468,7 +473,7 @@ li,code,td,th {
 // ...
 func (c *Controller) ListAuthors(w http.ResponseWriter, r *http.Request) {
   var authors []model.Author
-  err := c.db.Find(&authors).Error
+  err := c.db.Preload("Books").Find(&authors).Error
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     log.Fatal(err)
@@ -504,7 +509,7 @@ li,code,td,th {
 func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
   id := r.URL.Path[len("/authors/"):]
   var author model.Author
-  err := c.db.First(&author, id).Error
+  err := c.db.Preload("Books").First(&author, id).Error
   if err != nil {
     w.WriteHeader(http.StatusInternalServerError)
     log.Fatal(err)
@@ -520,6 +525,23 @@ func (c *Controller) GetAuthorByID(w http.ResponseWriter, r *http.Request) {
   w.Write(result)
 }
 ```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+  code {
+    font-size: 80%;
+  }
+  </style>
+
+### CRUD with `GORM`
+
+- In the previous slides, the method `.Preload("Books")` was called.
+
+- This is a feature from `GORM` that tells the query to return the author associated with the book.
+
+- This technique is called _eager loading_ and will be exaplained in more detail later
 
 ---
 
@@ -550,21 +572,23 @@ li,code,td,th {
 ```bash
 $ curl http://localhost:8080/authors | jq
 [
-  {
+   {
     "ID": 1,
-    "CreatedAt": "2023-07-05T01:05:05.803875Z",
-    "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+    "CreatedAt": "2023-07-06T01:18:28.220539Z",
+    "UpdatedAt": "2023-07-06T01:18:28.220539Z",
     "DeletedAt": null,
     "FirstName": "William",
-    "LastName": "Shakespeare"
+    "LastName": "Shakespeare",
+    "Books": [{...},{...}]
   },
   {
     "ID": 2,
-    "CreatedAt": "2023-07-05T01:05:05.805375Z",
-    "UpdatedAt": "2023-07-05T01:05:05.805375Z",
+    "CreatedAt": "2023-07-06T01:18:28.221913Z",
+    "UpdatedAt": "2023-07-06T01:18:28.221913Z",
     "DeletedAt": null,
     "FirstName": "Harper",
-    "LastName": "Lee"
+    "LastName": "Lee",
+    "Books": [{...}]
   }
 ]
 ```
@@ -574,7 +598,7 @@ $ curl http://localhost:8080/authors | jq
 <!-- _class: invert -->
 <style scoped>
 li,code,td,th {
-  font-size: 80%;
+  font-size: 75%;
 }
 </style>
 
@@ -583,14 +607,26 @@ li,code,td,th {
 - `/authors/<id>` endpoint:
 
 ```bash
-$ curl http://localhost:8080/authors/1 | jq
+$ curl http://localhost:8080/authors/2 | jq
 {
-  "ID": 1,
-  "CreatedAt": "2023-07-05T01:05:05.803875Z",
-  "UpdatedAt": "2023-07-05T01:05:05.803875Z",
+  "ID": 2,
+  "CreatedAt": "2023-07-06T01:18:28.221913Z",
+  "UpdatedAt": "2023-07-06T01:18:28.221913Z",
   "DeletedAt": null,
-  "FirstName": "William",
-  "LastName": "Shakespeare"
+  "FirstName": "Harper",
+  "LastName": "Lee",
+  "Books": [
+    {
+      "ID": 3,
+      "CreatedAt": "2023-07-06T01:18:28.226073Z",
+      "UpdatedAt": "2023-07-06T01:18:28.226073Z",
+      "DeletedAt": null,
+      "Title": "To Kill a Mockingbird",
+      "Description": "Set in the racially-charged 1930s ...",
+      "YearOfPublication": 1860,
+      "AuthorID": 2,
+    }
+  ]
 }
 ```
 
@@ -785,25 +821,11 @@ func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
 ---
 
 <!-- _class: invert -->
-
-##### CRUD with `GORM`
-
-- In the previous slides, an additional method was called: `.Preload("Authors")`
-
-- This is a feature from `GORM` that tells the query to return the author associated with the book.
-
-- This technique is called _eager loading_ and will be exaplained in more detail later
-
----
-
-<!-- _class: invert -->
 <style scoped>
 li,code,td,th {
-  font-size: 80%;
+  font-size: 90%;
 }
 </style>
-
-##### CRUD with `GORM`
 
 - Testing the `/books` endpoint:
 
@@ -1044,10 +1066,454 @@ li,code,td,th {
 
 - For the _Create_ operation, we will use the `POST` HTTP method in the endpoints `/authors` and `/books`:
 
-| **HTTP Method** |  **Endpoint**   |      **Description**      |
-| :-------------: | :-------------: | :-----------------------: |
-|      POST       |    `/authors`   |      Insert an author     |
-|      POST       |     `/books`    |       Inserts a book      |
+| **HTTP Method** | **Endpoint** |  **Description**  |
+| :-------------: | :----------: | :---------------: |
+|      POST       |  `/authors`  | Inserts an author |
+|      POST       |   `/books`   |  Inserts a book   |
 
 - Also, when requesting these endpoints, we'll need a payload with the data to be added.
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```diff
+func (c *Controller) Authors() http.HandlerFunc {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++    if r.Method == http.MethodPost {
++      c.CreateAuthor(w, r)
++      return
++    }
+    if r.Method == http.MethodGet {
+      c.ListAuthors(w, r)
+      return
+    }
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method not allowed"))
+  })
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```go
+func (c *Controller) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+  defer r.Body.Close()
+  var payload createAuthorPayload
+  if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+    w.WriteHeader(http.StatusBadRequest)
+    w.Write([]byte(err.Error()))
+    return
+  }
+  author := &model.Author{
+    FirstName: payload.FirstName,
+    LastName:  payload.LastName,
+  }
+  if err := c.db.Create(&author).Error; err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+  }
+  result, err := json.Marshal(author)
+  if err != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    log.Fatal(err)
+    return
+  }
+  w.WriteHeader(http.StatusCreated)
+  w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `createAuthorPayload` type is declared with the fields and types used in the payload:
+
+```go
+type createAuthorPayload struct {
+  FirstName string
+  LastName  string
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X POST 'http://localhost:8080/authors' \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"Jane","lastName":"Austen"}' | jq
+{
+  "ID": 9,
+  "CreatedAt": "2023-07-06T23:44:41.681442697Z",
+  "UpdatedAt": "2023-07-06T23:44:41.681442697Z",
+  "DeletedAt": null,
+  "FirstName": "Jane",
+  "LastName": "Austen",
+  "Books": null
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X POST 'http://localhost:8080/authors' \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":123,"lastName":"Austen"}'
+json: cannot unmarshal number into Go struct field createAuthorPayload.FirstName of type string
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- The implementation for `/books` is quite similar. Here's the `createBookPayload` type declaration:
+
+```go
+type createBookPayload struct {
+	Title             string
+	Description       string
+	YearOfPublication int
+	AuthorID          int
+}
+```
+
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- One more operation to go! Next: _Update_
+  - ~~*C*reate~~ :ballot_box_with_check:
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - *U*pdate
+  - ~~*D*elete~~ :ballot_box_with_check:
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- For the _Update_ operation, we will use the `PATCH` HTTP method in the endpoints `/authors` and `/books`:
+
+| **HTTP Method** | **Endpoint** |  **Description**  |
+| :-------------: | :----------: | :---------------: |
+|     PATCH       |  `/authors`  | Updates an author |
+|     PATCH       |   `/books`   |  Updates a book   |
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+```diff
+func (c *Controller) AuthorsByID() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			c.GetAuthorByID(w, r)
+			return
+		}
++		if r.Method == http.MethodPatch {
++			c.UpdateAuthor(w, r)
++			return
++		}
+		if r.Method == http.MethodDelete {
+			c.DeleteAuthor(w, r)
+			return
+		}
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		w.Write([]byte("Method not allowed"))
+	})
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- First we get the author being updated and check if it exists:
+
+```go
+func (c *Controller) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/authors/"):]
+	var author model.Author
+	err := c.db.Preload("Books").First(&author, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("author not found."))
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Then we load the payload and update the fields:
+
+```go
+// ...
+	defer r.Body.Close()
+	var payload updateAuthorPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	if payload.FirstName != "" {
+		author.FirstName = payload.FirstName
+	}
+
+	if payload.LastName != "" {
+		author.LastName = payload.LastName
+	}
+
+	if err := c.db.Save(&author).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+// ...
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Lastly we return the author with updated fields:
+
+```go
+// ...
+	result, err := json.Marshal(author)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write(result)
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- The `updateAuthorPayload` type is identical with the `createAuthorPayload` type:
+
+```go
+type updateAuthorPayload struct {
+  FirstName string
+  LastName  string
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"Gulielmus","lastName":"Shakspere"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "Gulielmus",
+  "LastName": "Shakspere",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":"William"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "William",
+  "LastName": "Shakspere",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Testing the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"lastName":"Shakespeare"}' | jq
+{
+  "ID": 1,
+  "CreatedAt": "2023-07-06T01:18:28.220539Z",
+  "UpdatedAt": "2023-07-07T00:55:05.965733711Z",
+  "DeletedAt": null,
+  "FirstName": "William",
+  "LastName": "Shakespeare",
+  "Books": [...]
+}
+```
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+li,code,td,th {
+  font-size: 90%;
+}
+</style>
+
+#### CRUD with `GORM`
+
+- Let's test the route:
+
+```bash
+$ curl -X PATCH http://localhost:8080/authors/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"firstName":123}'
+json: cannot unmarshal number into Go struct field updateAuthorPayload.FirstName of type string
+```
+---
+
+<!-- _class: invert -->
+
+#### CRUD with `GORM`
+
+- That completes the CRUD operations :tada:
+  - ~~*C*reate~~ :ballot_box_with_check:
+  - ~~*R*etrieve~~ :ballot_box_with_check:
+  - ~~*U*pdate~~ :ballot_box_with_check:
+  - ~~*D*elete~~ :ballot_box_with_check:
 

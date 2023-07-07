@@ -31,6 +31,10 @@ func (c *Controller) AuthorsByID() http.HandlerFunc {
 			c.GetAuthorByID(w, r)
 			return
 		}
+		if r.Method == http.MethodPatch {
+			c.UpdateAuthor(w, r)
+			return
+		}
 		if r.Method == http.MethodDelete {
 			c.DeleteAuthor(w, r)
 			return
@@ -93,7 +97,6 @@ func (c *Controller) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
-		log.Fatal(err)
 		return
 	}
 	author := &model.Author{
@@ -119,10 +122,54 @@ type createAuthorPayload struct {
 	LastName  string
 }
 
-func UpdateAuthor(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) UpdateAuthor(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/authors/"):]
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Update author by ID: " + id))
+	var author model.Author
+	err := c.db.Preload("Books").First(&author, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("author not found."))
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+
+	defer r.Body.Close()
+	var payload updateAuthorPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	if payload.FirstName != "" {
+		author.FirstName = payload.FirstName
+	}
+
+	if payload.LastName != "" {
+		author.LastName = payload.LastName
+	}
+
+	if err := c.db.Save(&author).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	result, err := json.Marshal(author)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write(result)
+}
+
+type updateAuthorPayload struct {
+	FirstName string
+	LastName  string
 }
 
 func (c *Controller) DeleteAuthor(w http.ResponseWriter, r *http.Request) {

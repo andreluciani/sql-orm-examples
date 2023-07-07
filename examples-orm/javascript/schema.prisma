@@ -9,10 +9,13 @@ model Authors {
 }
 
 model Books {
-    id                Int     @id @default(autoincrement())
+    id                Int       @id @default(autoincrement())
     title             String
     description       String?
     yearOfPublication Int
-    author            Authors @relation(fields: [authorId], references: [id])
+    author            Authors   @relation(fields: [authorId], references: [id])
     authorId          Int
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+    deletedAt         DateTime?
 }

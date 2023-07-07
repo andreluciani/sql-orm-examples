@@ -2379,7 +2379,7 @@ quotes_db=# SELECT * FROM quotes;
 ### An Example With Go
 
 - Instead of using `psql` we want to query the database **from the server**.
-- To achieve that we need to _connect_ to the database (DB) and then _do the query_ to get a quote e and return it in the response.
+- To achieve that we need to _connect_ to the database (DB) and then _do the query_ to get a quote and return it in the response.
 
 ---
 

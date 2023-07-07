@@ -83,9 +83,38 @@ func (c *Controller) GetBookByID(w http.ResponseWriter, r *http.Request) {
 	w.Write(result)
 }
 
-func CreateBook(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Create Book"))
+func (c *Controller) CreateBook(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var payload createBookPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	book := &model.Book{
+		Title:             payload.Title,
+		Description:       payload.Description,
+		YearOfPublication: payload.YearOfPublication,
+	}
+	if err := c.db.Create(&book).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+	result, err := json.Marshal(book)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Fatal(err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write(result)
+}
+
+type createBookPayload struct {
+	Title             string
+	Description       string
+	YearOfPublication int
+	AuthorID          int
 }
 
 func UpdateBook(w http.ResponseWriter, r *http.Request) {

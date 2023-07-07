@@ -62,11 +62,7 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 2. CRUD Operations with ORMs:
    - [x]  Creating objects and inserting data.
    - [x]  Retrieving objects using queries.
-   - [ ]  Updating and deleting objects.
-
-3. Relationships and Associations:
-   - [ ]  Defining relationships between objects (e.g., one-to-one, one-to-many, many-to-many).
-   - [ ]  Handling associations using ORMs.
+   - [x]  Updating and deleting objects.
 
 4. Additional ORM Concepts:
    - [ ]  Lazy loading vs. eager loading.

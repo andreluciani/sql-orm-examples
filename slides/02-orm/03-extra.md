@@ -9,6 +9,13 @@ _paginate: false
 math: mathjax
 ---
 
+# ORMs
+## Next Steps
+
+Now we're going to see a few additional ORM concepts that are very important to know...
+
+---
+
 # Additional ORM Concepts
 
 - **Lazy Loading vs. Eager Loading**
