@@ -1,8 +1,12 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples)
 
-# SQL and ORM Examples
+# SQL and ORM Examples (WIP)
 
 Simple repository to illustrate SQL and ORM concepts
+
+The slides use PostgreSQL and Go in most of the examples.
+
+The `examples` and `examples-orm` directories have all the code used in the slides.
 
 The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 
@@ -82,10 +86,6 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 3. Performance Tuning:
    - [ ]  Optimizing database schema and indexes.
    - [ ]  Caching strategies and query optimization.
-
-4. Integration with Frameworks:
-   - [ ]  Integrating ORMs with popular web frameworks.
-   - [ ]  Framework-specific tips and tricks.
 
 5. Troubleshooting and Debugging:
    - [ ]  Common issues with ORMs and SQL.
