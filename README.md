@@ -1,6 +1,6 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/andreluciani/sql-orm-examples)
 
-# SQL and ORM Examples (WIP)
+# SQL and ORM Examples
 
 Simple repository to illustrate SQL and ORM concepts
 
@@ -50,7 +50,7 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [x]  Aggregating data with GROUP BY clause.
 
 7. Advanced SQL Concepts:
-   - [ ]  Subqueries: using queries within queries.
+   - [x]  Subqueries: using queries within queries.
    - [ ]  Views: virtual tables for simplified querying.
    - [ ]  Indexes: optimizing data retrieval.
    - [ ]  Transactions: ensuring data consistency.
