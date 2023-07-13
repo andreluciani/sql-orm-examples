@@ -2076,6 +2076,36 @@ The next slides will introduce more advanced concepts, all of them are very powe
 
 <!-- _class: invert -->
 
+## Subqueries
+
+* _Subqueries_ (also called _inner queries_) are used to query data "inside" another query.
+
+* For instance, we may use subqueries to filter out rows before making a `JOIN` statement, or to define values to be used in thw `WHERE` clause.
+
+* Let's see an example to better understand the concept!
+
+
+---
+
+<!-- _class: invert -->
+
+## Subqueries
+
+* The basic syntax of subqueries is quite simple, just wrap a regular query in parenthesis:
+
+```sql
+SELECT column1, column2
+FROM table_name1
+WHERE condition
+    (SELECT column1, column2
+     FROM table_name2)
+```
+
+
+---
+
+<!-- _class: invert -->
+
 # Views
 
 ---
