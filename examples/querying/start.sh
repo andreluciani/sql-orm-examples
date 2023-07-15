@@ -6,7 +6,7 @@
     CREATE DATABASE blog;
     \c blog
 eof
-    for i in $(ls -1 ./*.sql | sort)
+    for i in $(ls -1 ./0*.sql | sort)
     do
         echo "\\echo 'running $i'"
         cat "$i"
