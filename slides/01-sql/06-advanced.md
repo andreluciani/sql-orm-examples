@@ -96,7 +96,7 @@ WHERE name LIKE 'A%';
 ## Subqueries
 
 ```
- id 
+ id
 ----
   3
   5
@@ -184,7 +184,6 @@ ORDER BY posts.id;
 
 ---
 
-
 <!-- _class: invert -->
 
 ## Views
@@ -247,7 +246,7 @@ After creating the view, we can query as usual:
 
 ```
 blog=# SELECT * FROM vw_post_titles_images LIMIT 5;
- post_id |                      post_title                       |        image_link        
+ post_id |                      post_title                       |        image_link
 ---------+-------------------------------------------------------+--------------------------
        6 | Shape Shifter : Fact versus Fiction                   | https://onlink.site/yQCF
        9 | 20 Dress Reviews in Tweet Form                        | https://onlink.site/93iP
