@@ -52,7 +52,7 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
 7. Advanced SQL Concepts:
    - [x]  Subqueries: using queries within queries.
    - [x]  Views: virtual tables for simplified querying.
-   - [ ]  Indexes: optimizing data retrieval.
+   - [x]  Indexes: optimizing data retrieval.
    - [ ]  Transactions: ensuring data consistency.
    - [ ]  Multi-tenancy: how to separate user environments.
 

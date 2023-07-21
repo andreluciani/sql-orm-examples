@@ -2295,9 +2295,110 @@ blog=# SELECT * FROM vw_post_titles_images LIMIT 5;
 
 ---
 
+## Views
+
+- When creating views, the `view_name` must be unique in the database
+- A good approach is to prefix views names with `vw_`
+
+---
+
 <!-- _class: invert -->
 
 # Indexes
+
+---
+
+<!-- _class: invert -->
+
+## Indexes
+
+- In SQL databases indexes are used to query data with **better performance**.
+
+- They work similarly to an index of a book: instead of scanning through _all_ the pages of the book searching for a keyword,
+  we can look at the index and find what we're looking for way faster.
+
+---
+
+<!-- _class: invert -->
+
+## Indexes
+
+- Indexes may be used for columns that are queried a lot.
+- Indexes are created automatically for _primary keys_ or _unique_ constraint columns (it makes sense, since primary keys or unique values are often used in SQL queries)
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## Indexes
+
+- Basic syntax:
+
+```sql
+CREATE INDEX index_name
+ON table_name (column1, column2, ...);
+```
+
+And just like that, you've created an index!
+
+---
+
+<!-- _class: invert -->
+
+## Indexes
+
+- When creating indexes, the `index_name` must be unique in the database
+- A good approach is to prefix indexes names with `idx_`
+- There are different _types_ of indexes, and they vary among SQL DMS, but the default is [B-tree](https://en.wikipedia.org/wiki/B-tree)
+
+---
+
+<!-- _class: invert -->
+<style scoped>
+.language-sql {
+  font-size: 120%;
+}
+</style>
+
+## Indexes
+
+- Let's create an index for the `blog`database:
+
+```sql
+CREATE INDEX idx_posts_titles
+ON posts(title);
+```
+
+In this example, querying for keywords in the `title` column would be faster because of the new index.
+
+---
+
+# Why not create indexes on **every** column?
+
+---
+
+#### Why not create indexes on every column?
+
+1. Indexes store copies of data
+2. If the table is not big, it may be faster to san the table then to scan the index
+3. Operations such as `INSERT`, `UPDATE` and `DELETE` take longer when indexes are used
+
+---
+
+<!-- _class: invert -->
+
+## Indexes
+
+"Rules of thumb" for index creation:
+
+- Columns used in `WHERE`, `JOIN` or `HAVING` clauses
+- Foreign keys columns
+- Columns with several distinct values
 
 ---
 
