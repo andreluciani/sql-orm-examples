@@ -4,16 +4,18 @@
   "description": "Simple repository to illustrate SQL and ORM concepts",
   "scripts": {
     "install-deps": "./setup.sh",
-    "build": "rm -rf public && ./compile.sh  && npm run -s og-image && npm run -s deck",
+    "build": "rm -rf public && ./compile.sh  && npm run -s og-image && npm run -s deck && node umami.js",
+    "dev": "rm -rf public && ./compile.sh  && npm run -s og-image && npm run -s deck",
     "deck": "marp --no-stdin --html index.md -o public/index.html && cp -R assets public/assets",
     "og-image": "marp --no-stdin index.md -o public/og-image.jpg",
     "serve": "npx parcel public/index.html",
-    "start": "npm run -s build && npx parcel public/index.html"
+    "start": "npm run -s dev && npx parcel public/index.html"
   },
   "author": "André Luciani",
   "license": "MIT",
   "devDependencies": {
     "@marp-team/marp-cli": "^3.1.0",
+    "cheerio": "^1.0.0-rc.12",
     "parcel": "^2.9.3"
   }
 }
