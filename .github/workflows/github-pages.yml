@@ -39,6 +39,7 @@ jobs:
         env:
           URL: https://${{ github.event.repository.owner.name }}.github.io/${{ github.event.repository.name }}
           LANG: en-US
+          UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
 
       - name: Upload page artifacts
         uses: actions/upload-pages-artifact@v1
