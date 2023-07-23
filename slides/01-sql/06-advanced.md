@@ -373,4 +373,126 @@ In this example, querying for keywords in the `title` column would be faster bec
 
 <!-- _class: invert -->
 
+## Transactions
+
+- _Transactions_ allow grouping multiple database operations in a "all-or-nothing" manner
+
+- It is a fundamental concept that enhances integrity and consistency of the database
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+- For instance when a user creates a profile in our `blog` database, it might be the case that the city where they live is not listed in the `cities` table and has to be created in the same operation.
+
+- Let's see what the query would look like...
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+```sql
+INSERT INTO cities(name)
+VALUES ('New York');
+INSERT INTO users(name, email, city_id, role_id)
+VALUES ('John', 'john@email.com', (SELECT city_id FROM cities WHERE name = 'New York'), 1);
+```
+
+---
+
+## Transactions
+
+- What if the query fails at the creation of the `cities` entry?
+
+- And what about if it fails at the user creation?
+
+- In both cases, inconsistencies could arise...
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+That's why transactions are so important, if we wrap the operations in a single transaction, the database will persist the data only if **both** operations are successful!
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+- Here's the basic syntax:
+
+```sql
+BEGIN;
+-- SQL statements
+COMMIT;
+```
+
+- Or:
+
+```sql
+BEGIN;
+-- SQL statements
+ROLLBACK;
+```
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+- When using `COMMIT` the operations will be persisted to the database.
+
+- `ROLLBACK` on the other hand, discards the changes up to the point where the transacion begun (at the `BEGIN` statement)
+
+- It is possible to `ROLLBACK` to different steps of the transaction using _savepoints_.
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+```sql
+BEGIN;
+UPDATE accounts SET balance = balance - 100.00
+    WHERE name = 'Alice';
+SAVEPOINT my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Bob';
+-- oops ... forget that and use Wally's account
+ROLLBACK TO my_savepoint;
+UPDATE accounts SET balance = balance + 100.00
+    WHERE name = 'Wally';
+COMMIT;
+```
+
+---
+
+<!-- _class: invert -->
+
+## Transactions
+
+- Here's our example using a transaction
+
+```sql
+BEGIN;
+INSERT INTO cities(name)
+VALUES ('New York');
+INSERT INTO users(name, email, city_id, role_id)
+VALUES ('John', 'john@email.com', (SELECT city_id FROM cities WHERE name = 'New York'), 1);
+COMMIT;
+```
+
+---
+
+<!-- _class: invert -->
+
 # Multi-tenancy
