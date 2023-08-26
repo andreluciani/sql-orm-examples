@@ -2385,7 +2385,7 @@ In this example, querying for keywords in the `title` column would be faster bec
 #### Why not create indexes on every column?
 
 1. Indexes store copies of data
-2. If the table is not big, it may be faster to san the table then to scan the index
+2. If the table is not big, it may be faster to scan the table than to scan the index
 3. Operations such as `INSERT`, `UPDATE` and `DELETE` take longer when indexes are used
 
 ---
@@ -2534,6 +2534,20 @@ COMMIT;
 
 # Multi-tenancy
 
+---
+
+<!-- _class: invert -->
+
+## Multi-tenancy
+
+-  
+
+<!-- https://medium.com/@edytarcio/arquitetura-multi-tenancy-bb7b47d7ba -->
+<!-- https://www.techtarget.com/whatis/definition/multi-tenancy -->
+<!-- https://levelup.gitconnected.com/5-tips-to-design-for-multi-tenancy-architecture-5f7d55657d77 -->
+<!-- https://relevant.software/blog/multi-tenant-architecture/ -->
+<!-- https://docs.aws.amazon.com/prescriptive-guidance/latest/saas-multitenant-managed-postgresql/partitioning-models.html -->
+<!-- https://hackernoon.com/your-guide-to-schema-based-multi-tenant-systems-and-postgresql-implementation-gm433589 -->
 ---
 
 <!-- _class: invert -->

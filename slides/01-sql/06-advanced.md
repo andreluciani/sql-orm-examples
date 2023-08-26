@@ -348,7 +348,7 @@ In this example, querying for keywords in the `title` column would be faster bec
 #### Why not create indexes on every column?
 
 1. Indexes store copies of data
-2. If the table is not big, it may be faster to san the table then to scan the index
+2. If the table is not big, it may be faster to scan the table than to scan the index
 3. Operations such as `INSERT`, `UPDATE` and `DELETE` take longer when indexes are used
 
 ---
@@ -496,3 +496,29 @@ COMMIT;
 <!-- _class: invert -->
 
 # Multi-tenancy
+
+---
+
+<!-- _class: invert -->
+
+## Multi-tenancy
+
+-  When developing a software that will be used by several users, it might be the case that we need to _separate concerns_, i.e., customer data based on a context.
+
+- For instance, if the software is a B2B SaaS, we probably want to separate data from each client (company).
+
+- To achieve this, there are a few options that will be discussed next. When this scenario shows up, we call each customer a _tenant_
+
+---
+
+<!-- _class: invert -->
+
+## Multi-tenant Architectures
+
+Here are a few options to achieve multi-tenancy:
+
+1. Database per tenant
+2. Shared tables
+    2.1. Tenant identification column
+    2.2. Row-level access
+3. Schema per tenant
