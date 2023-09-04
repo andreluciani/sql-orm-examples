@@ -503,11 +503,11 @@ COMMIT;
 
 ## Multi-tenancy
 
--  When developing a software that will be used by several users, it might be the case that we need to _separate concerns_, i.e., customer data based on a context.
+-  When developing a software that will be used by several users, it might be the case that we need to _separate concerns_, i.e., customer data, based on a context.
 
 - For instance, if the software is a B2B SaaS, we probably want to separate data from each client (company).
 
-- To achieve this, there are a few options that will be discussed next. When this scenario shows up, we call each customer a _tenant_
+- To achieve this, there are a few options that will be discussed next. When this scenario shows up, we call each customer context a _tenant_
 
 ---
 
@@ -522,3 +522,27 @@ Here are a few options to achieve multi-tenancy:
     2.1. Tenant identification column
     2.2. Row-level access
 3. Schema per tenant
+
+---
+
+<!-- _class: invert -->
+
+## Database per Tenant
+
+In the database per tenant architecture, each tenant is allocated a dedicated database instance, ensuring strict data isolation and autonomy. This approach offers excellent security and scalability, making it ideal for large-scale applications with diverse tenants. However, it can be resource-intensive and costly to maintain numerous separate databases.
+
+---
+
+<!-- _class: invert -->
+
+## Shared Tables
+
+Shared tables employ a single database with a common schema, where a unique identifier (usually a tenant ID) distinguishes tenant-specific data. Rows are tagged with this identifier, enabling efficient data separation. While this approach reduces infrastructure complexity and costs, it demands careful management to prevent unauthorized data access and can face performance challenges as the dataset grows.
+
+---
+
+<!-- _class: invert -->
+
+## Schema per Tenant
+
+In the schema per tenant strategy, every tenant gets their distinct schema within a shared database. This method combines aspects of both previous approaches, granting tenants autonomy over their data structure while benefiting from resource consolidation. Nonetheless, it requires careful schema management and may still incur additional overhead compared to shared tables.
