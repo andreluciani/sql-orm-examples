@@ -53,8 +53,8 @@ The slides are built with [Marp](https://github.com/marp-team/marp-cli)
    - [x]  Subqueries: using queries within queries.
    - [x]  Views: virtual tables for simplified querying.
    - [x]  Indexes: optimizing data retrieval.
-   - [ ]  Transactions: ensuring data consistency.
-   - [ ]  Multi-tenancy: how to separate user environments.
+   - [x]  Transactions: ensuring data consistency.
+   - [x]  Multi-tenancy: how to separate user environments.
 
 ## **Part 2: Object-Relational Mappers (ORMs)**
 
