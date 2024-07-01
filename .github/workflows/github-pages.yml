@@ -42,7 +42,7 @@ jobs:
           UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
 
       - name: Upload page artifacts
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages
           path: public
